@@ -47,61 +47,6 @@ int empty_color=0x000000;
 
 int lines_cleared=0,lines_cleared_last=0,lines_cleared_total=0;
 
-int block_array_i[]=
-{
- 0,0,0,0,
- 1,1,1,1,
- 0,0,0,0,
- 0,0,0,0,
-};
-
-int block_array_t[]=
-{
- 0,1,0,0,
- 1,1,1,0,
- 0,0,0,0,
- 0,0,0,0,
-};
-
-int block_array_z[]=
-{
- 1,1,0,0,
- 0,1,1,0,
- 0,0,0,0,
- 0,0,0,0,
-};
-
-int block_array_j[]=
-{
- 1,0,0,0,
- 1,1,1,0,
- 0,0,0,0,
- 0,0,0,0,
-};
-
-int block_array_o[]=
-{
- 1,1,0,0,
- 1,1,0,0,
- 0,0,0,0,
- 0,0,0,0,
-};
-
-int block_array_l[]=
-{
- 0,0,1,0,
- 1,1,1,0,
- 0,0,0,0,
- 0,0,0,0,
-};
-
-int block_array_s[]=
-{
- 0,1,1,0,
- 1,1,0,0,
- 0,0,0,0,
- 0,0,0,0,
-};
 
 int block_type=0;
 
@@ -135,6 +80,8 @@ void spawn_block()
  main_block.array[1+1*max_block_width]=colors[puyo1];
  main_block.array[1+2*max_block_width]=colors[puyo2];
 
+ puyo1=puyo2;
+ puyo2++;  puyo2%=3;
 
  main_block.x=(grid_width-main_block.width_used)/2;
  main_block.y=0;
@@ -229,110 +176,9 @@ void tetris_clear_screen()
 }
 
 
-void tetris_clear_lines()
-{
- int x,y,xcount,x1,y1;
-
- lines_cleared=0;
-
- y=grid_height;
- while(y>0)
- {
-  y-=1;
-
-  xcount=0;
-  x=0;
-  while(x<grid_width)
-  {
-   if(main_grid.array[x+y*grid_width]!=empty_color){xcount++;}
-   x+=1;
-  }
-
-  /*printf("row %d xcount %d\n",y,xcount);*/
-
-  if(xcount==grid_width)
-  {
-   y1=y;
-
-   /*printf("row %d line clear attempt.\n",y);*/
-
-   x1=0;
-   while(x1<grid_width)
-   {
-    main_grid.array[x1+y1*grid_width]=empty_color;
-
-    x1++;
-   }
-   
-  
-   lines_cleared++;
-  }
-
- }
-
-
- lines_cleared_total+=lines_cleared;
-
- /*printf("this line clear: %d\n",lines_cleared);
- printf("total lines cleared: %d\n",lines_cleared_total);*/
-
- /*scoring section*/
- if(lines_cleared==1)
- {
-  if(last_move_spin==1)
-  {
-   if(back_to_back>0){score+=1200;}
-   else{score+=800;}
-   back_to_back++;
-  }
-  else
-  {
-   score+=100;back_to_back=0;
-  }
- }
- if(lines_cleared==2)
- {
-  if(last_move_spin==1)
-  {
-   if(back_to_back>0){score+=1800;}
-   else{score+=1200;}
-   back_to_back++;
-  }
-  else
-  {
-   score+=300;back_to_back=0;
-  }
- }
- if(lines_cleared==3)
- {
-  if(last_move_spin==1)
-  {
-   if(back_to_back>0){score+=2400;}
-   else{score+=1600;}
-   back_to_back++;
-  }
-  else {score+=500;back_to_back=0;}
- }
- 
- if(lines_cleared==4)
- {
-  if(back_to_back>0){score+=1200;}
-  else{score+=800;}
-  back_to_back++;
- }
-
- if(lines_cleared!=0)
- {
-  lines_cleared_last=lines_cleared;
-
- }
-
-}
-
-
 /*lines fall down to previously cleared line spaces*/
 
-void tetris_fall_lines()
+void puyo_fall()
 {
  int x,y,xcount,y1;
 
@@ -347,58 +193,43 @@ void tetris_fall_lines()
   x=0;
   while(x<grid_width)
   {
-   if(main_grid.array[x+y*grid_width]!=empty_color){xcount++;}
+   if(main_grid.array[x+y*grid_width]==empty_color) /*if a spot is empty, find things above to fill it with.*/
+   {
+   
+   //printf("grid space of X=%d Y=%d is empty.\n",x,y);
+   
+   y1=y;
+   while(y1>0)
+   {
+    y1--;
+    
+    if(main_grid.array[x+y1*grid_width]!=empty_color)
+    {
+     main_grid.array[x+y*grid_width]=main_grid.array[x+y1*grid_width]; /*copy from space above*/
+     main_grid.array[x+y1*grid_width]=empty_color; /*make space above empty now that is has been moved*/
+    
+     //printf("X=%d Y=%d moved to X=%d Y=%d\n",x,y1,x,y);
+
+     break;
+    }
+    
+   }
+    
+    xcount++;
+   }
+   
    x+=1;
   }
 
   /*printf("row %d xcount %d\n",y,xcount);*/
 
-  if(xcount==0)
-  {
-   /* printf("row %d is empty\n",y);*/
-
-   /*find first non empty row above empty row*/
-
-   y1=y;
-   while(y1>0)
-   {
-    y1--;
-    xcount=0;
-    x=0;
-    while(x<grid_width)
-    {
-     if(main_grid.array[x+y1*grid_width]!=empty_color){xcount++;}
-     x+=1;
-    }
-    if(xcount>0)
-    {
-/*     printf("row %d is not empty. Will copy to row %d.\n",y1,y);*/
-
-     x=0;
-
-     x=0;
-     while(x<grid_width)
-     {
-      main_grid.array[x+y*grid_width]=main_grid.array[x+y1*grid_width];
-      main_grid.array[x+y1*grid_width]=empty_color;
-      x++;
-     }
-     break;
-    }
-   }
-
-  }
-
  }
 
 }
 
-/*this function controls whether or not the block index changes.*/
-void tetris_next_block()
-{
- /*optionally increment block type for different block next time.*/
- block_type++;  block_type%=blocks_used;
-}
+
+
+
 
 
 void tetris_set_block()
@@ -415,7 +246,7 @@ void tetris_set_block()
    {
     if(main_block.array[x+y*max_block_width]!=0)
     {
-      main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.color;
+      //main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.color;
       main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
     }
     x+=1;
@@ -425,16 +256,14 @@ void tetris_set_block()
 
 
 
- tetris_clear_lines();
-
- if(lines_cleared_last>0){tetris_fall_lines();}
+ puyo_fall();
 
 
- tetris_next_block();
  spawn_block();
 
 
 }
+
 
 /*all things about moving down*/
 void tetris_move_down()
@@ -695,7 +524,6 @@ void block_hold()
  {
   /*printf("hold block used first time.\n");*/
   hold_block=main_block;
-  tetris_next_block();
   spawn_block();
   hold_used=1;
  }

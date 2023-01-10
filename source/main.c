@@ -524,7 +524,7 @@ int main(int argc, char **argv)
  font_128=chaste_font_load("./font/Tetris Font 128.png");
 */
 
-title_screen_chaste_font();
+//title_screen_chaste_font();
 //welcome_screen_chaste_font();
 
 /*
