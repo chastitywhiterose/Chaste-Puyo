@@ -80,8 +80,8 @@ void spawn_block()
  main_block.array[1+1*max_block_width]=colors[puyo1];
  main_block.array[1+2*max_block_width]=colors[puyo2];
 
- puyo1=puyo2;
- puyo2++;  puyo2%=3;
+ //puyo1=puyo2;
+ //puyo2++;  puyo2%=3;
 
  main_block.x=(grid_width-main_block.width_used)/2;
  main_block.y=0;
@@ -229,10 +229,108 @@ void puyo_fall()
 
 
 
+int puyo_count=0;
+int tempcolor=0xFFFFFF;
+int testcolor=0xFFFF00;
+
+void puyo_fill(int x,int y, int matchcolor, int setcolor)
+{
+
+ //printf("checking X=%d Y=%d\n",x,y);
+
+ if(matchcolor==setcolor){printf("Match and set colors are same! This is failure!\n");return;}
+
+ if(x<0 || x>=grid_width){printf("X %d is out of bounds\n",x);return;}
+ if(y<0 || y>=grid_height){printf("Y %d is out of bounds\n",y);return;}
+
+ if(main_grid.array[x+y*grid_width]==matchcolor)
+ {
+  main_grid.array[x+y*grid_width]=setcolor;
+  
+  puyo_count++;
+
+ /*next check the ones connected up,down,left,right.*/
+  
+  puyo_fill(x-1,y,matchcolor,setcolor);
+  puyo_fill(x+1,y,matchcolor,setcolor);
+  puyo_fill(x,y-1,matchcolor,setcolor);
+  puyo_fill(x,y+1,matchcolor,setcolor);
+  
+  printf("done\n");
+ }
+ else
+ {
+  return;
+ }
+
+}
+
+/*a function designed to match/floodfill puyo*/
+
+void puyo_match()
+{
+ int x,y,color;
+ 
+
+ y=grid_height;
+ while(y>0)
+ {
+  y-=1;
+
+  x=0;
+  while(x<grid_width)
+  {
+
+   if(main_grid.array[x+y*grid_width]!=empty_color) /*if a spot is empty, find things above to fill it with.*/
+   {
+   
+    printf("grid space of X=%d Y=%d is not empty.\n",x,y);
+    
+    color=main_grid.array[x+y*grid_width];
+    
+    printf("Color is %06X\n",color);
+    
+    if(color==tempcolor)
+    {
+     printf("Color is already %06X and will be ignored\n",tempcolor);
+    }
+    else
+    {
+    
+     /*because this is valid color, attempt to flood fill/count how many are connected*/
+     puyo_count=0;
+     puyo_fill(x,y,color,tempcolor);
+    
+    
+     printf("Puyo match count is %d\n",puyo_count);
+ 
+     if(puyo_count<4)
+     {
+      printf("It is less than 4 and will be reverted.\n");
+      puyo_fill(x,y,0xFFFFFF,color);
+     }
+     else
+     {
+      printf("4 or more puyo are connected!\n");
+      printf("They shall be erased\n");
+      puyo_fill(x,y,0xFFFFFF,empty_color);
+     }
+ 
+    }
+   
+    
+   }
+
+
+   x+=1;
+  }
+ }
+
+}
 
 
 
-void tetris_set_block()
+void puyo_set_block()
 {
  int x,y;
 
@@ -257,6 +355,8 @@ void tetris_set_block()
 
 
  puyo_fall();
+ 
+ puyo_match();
 
 
  spawn_block();
@@ -280,7 +380,7 @@ void tetris_move_down()
  {
   main_block=temp_block;
   /*printf("Block is finished\n");*/
-  tetris_set_block();
+  puyo_set_block();
   moves++; /*moves normally wouldn't be incremented because move check fails but setting a block is actually a valid move.*/
  }
  else
