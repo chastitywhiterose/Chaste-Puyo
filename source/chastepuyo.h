@@ -178,11 +178,15 @@ void tetris_clear_screen()
 
 /*lines fall down to previously cleared line spaces*/
 
+int puyo_fall_count;
+
 void puyo_fall()
 {
  int x,y,xcount,y1;
 
 /* printf("Time to make lines fall\n");*/
+
+puyo_fall_count=0;
 
  y=grid_height;
  while(y>0)
@@ -207,6 +211,8 @@ void puyo_fall()
     {
      main_grid.array[x+y*grid_width]=main_grid.array[x+y1*grid_width]; /*copy from space above*/
      main_grid.array[x+y1*grid_width]=empty_color; /*make space above empty now that is has been moved*/
+     
+     puyo_fall_count++;
     
      //printf("X=%d Y=%d moved to X=%d Y=%d\n",x,y1,x,y);
 
@@ -229,7 +235,7 @@ void puyo_fall()
 
 
 
-int puyo_count=0;
+int puyo_match_count=0;
 int tempcolor=0xFFFFFF;
 int testcolor=0xFFFF00;
 
@@ -240,14 +246,14 @@ void puyo_fill(int x,int y, int matchcolor, int setcolor)
 
  if(matchcolor==setcolor){printf("Match and set colors are same! This is failure!\n");return;}
 
- if(x<0 || x>=grid_width){printf("X %d is out of bounds\n",x);return;}
- if(y<0 || y>=grid_height){printf("Y %d is out of bounds\n",y);return;}
+ if(x<0 || x>=grid_width){/*printf("X %d is out of bounds\n",x);*/return;}
+ if(y<0 || y>=grid_height){/*printf("Y %d is out of bounds\n",y);*/return;}
 
  if(main_grid.array[x+y*grid_width]==matchcolor)
  {
   main_grid.array[x+y*grid_width]=setcolor;
   
-  puyo_count++;
+  puyo_match_count++;
 
  /*next check the ones connected up,down,left,right.*/
   
@@ -256,7 +262,7 @@ void puyo_fill(int x,int y, int matchcolor, int setcolor)
   puyo_fill(x,y-1,matchcolor,setcolor);
   puyo_fill(x,y+1,matchcolor,setcolor);
   
-  printf("done\n");
+  //printf("done\n");
  }
  else
  {
@@ -267,10 +273,14 @@ void puyo_fill(int x,int y, int matchcolor, int setcolor)
 
 /*a function designed to match/floodfill puyo*/
 
+
+int puyo_popped;
 void puyo_match()
 {
  int x,y,color;
  
+ 
+ puyo_popped=0;
 
  y=grid_height;
  while(y>0)
@@ -284,33 +294,34 @@ void puyo_match()
    if(main_grid.array[x+y*grid_width]!=empty_color) /*if a spot is empty, find things above to fill it with.*/
    {
    
-    printf("grid space of X=%d Y=%d is not empty.\n",x,y);
+    //printf("grid space of X=%d Y=%d is not empty.\n",x,y);
     
     color=main_grid.array[x+y*grid_width];
     
-    printf("Color is %06X\n",color);
+    //printf("Color is %06X\n",color);
     
     if(color==tempcolor)
     {
-     printf("Color is already %06X and will be ignored\n",tempcolor);
+     //printf("Color is already %06X and will be ignored\n",tempcolor);
     }
     else
     {
     
      /*because this is valid color, attempt to flood fill/count how many are connected*/
-     puyo_count=0;
+     puyo_match_count=0;
      puyo_fill(x,y,color,tempcolor);
     
     
-     printf("Puyo match count is %d\n",puyo_count);
+     printf("Puyo match count is %d\n",puyo_match_count);
  
-     if(puyo_count<4)
+     if(puyo_match_count<4)
      {
-      printf("It is less than 4 and will be reverted.\n");
+      //printf("It is less than 4 and will be reverted.\n");
       puyo_fill(x,y,0xFFFFFF,color);
      }
      else
      {
+      puyo_popped=puyo_match_count;
       printf("4 or more puyo are connected!\n");
       printf("They shall be erased\n");
       puyo_fill(x,y,0xFFFFFF,empty_color);
@@ -330,68 +341,11 @@ void puyo_match()
 
 
 
-void puyo_set_block()
-{
- int x,y;
-
-
-  /*draw block onto grid at it's current location*/
-  y=0;
-  while(y<max_block_width)
-  {
-   x=0;
-   while(x<max_block_width)
-   {
-    if(main_block.array[x+y*max_block_width]!=0)
-    {
-      //main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.color;
-      main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
-    }
-    x+=1;
-   }
-   y+=1;
-  }
 
 
 
- puyo_fall();
- 
- puyo_match();
 
 
- spawn_block();
-
-
-}
-
-
-/*all things about moving down*/
-void tetris_move_down()
-{
- /*make backup of block location*/
-
- temp_block=main_block;
-
-
- main_block.y+=1;
-
- last_move_fail=tetris_check_move();
- if(last_move_fail)
- {
-  main_block=temp_block;
-  /*printf("Block is finished\n");*/
-  puyo_set_block();
-  moves++; /*moves normally wouldn't be incremented because move check fails but setting a block is actually a valid move.*/
- }
- else
- {
-  /*move was successful*/
- }
-
- last_move_fail=0; /*because moving down is always a valid operation, the fail variable should be set to 0*/
-
- fputc(move_id,fp); /*moving down is always a valid move either for setting a block or moving it down*/
-}
 
 
 /*all things about moving up*/

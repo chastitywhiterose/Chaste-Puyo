@@ -171,4 +171,92 @@ void chaste_checker_part()
  }
 
  
+ /*
+ this is a new function to handle the drawing of the grid
+ In Chaste Tris it only happened once and was just in the main loop. However, I want it to be called in other functions for debugging
+ and so I have moved it here.
+ */
+ 
+ void ray_draw_grid_puyo()
+ {
+  int x=0,y=0;
+  int pixel,r,g,b;
+ 
+  /*make backup of entire grid. It is a struct so it can be assigned easily.*/
+  temp_grid=main_grid;
+
+  /*draw block onto temp grid at it's current location*/
+  y=0;
+  while(y<max_block_width)
+  {
+   x=0;
+   while(x<max_block_width)
+   {
+    if(main_block.array[x+y*max_block_width]!=0)
+    {
+     if( temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]!=0 )
+     {
+      printf("Error: Block in Way\n"); /*errors rarely happen but this will alert if there is something wrong with movement/rotation */
+
+      /*because a collision has occurred. We will restore everything back to the way it was before block was moved.*/
+
+      break;
+     }
+     else
+     {
+      temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
+     }
+    }
+    x+=1;
+   }
+   y+=1;
+  }
+
+
+
+/*display the tetris grid*/
+
+ y=0;
+ while(y<grid_height)
+ {
+  x=0;
+  while(x<grid_width)
+  {
+   pixel=temp_grid.array[x+y*grid_width];
+   r=(pixel&0xFF0000)>>16;
+   g=(pixel&0x00FF00)>>8;
+   b=(pixel&0x0000FF);
+
+/*
+ printf("x=%d y=%d ",x,y);
+ printf("red=%d green=%d blue=%d\n",r,g,b);
+*/
+
+ray_block_color=(Color){r,g,b,255};
+
+//DrawRectangle(grid_offset_x+x*block_size,y*block_size,block_size,block_size,ray_block_color);
+DrawCircle( grid_offset_x+x*block_size+radius,y*block_size+radius, radius, ray_block_color);
+
+
+/*draw texture modified by the color of this block on the grid*/
+//DrawTexture(texture, grid_offset_x+x*block_size,y*block_size , ray_block_color);
+
+   x+=1;
+  }
+  y+=1;
+ }
+
+ 
+  /*draw the boundary walls original thick style*/
+//DrawRectangle(grid_offset_x-block_size,0*block_size,block_size,height,ray_border_color);
+//DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,block_size,height,ray_border_color);
+
+ /*draw the boundary walls new thin style*/
+DrawRectangle(grid_offset_x-border_size,0*block_size,border_size,height,ray_border_color);
+DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,border_size,height,ray_border_color);
+
+
+ /*end of drawing code for grid*/
+ 
+ }
 

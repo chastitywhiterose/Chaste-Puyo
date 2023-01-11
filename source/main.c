@@ -38,9 +38,119 @@ Font font;
 int fontsize=height/12;
 int text_x; /*the x position of where text will go*/
 
+/*more global variables to be defined before game loop function*/
+int block_size;
+int border_size;
+int grid_offset_x;
+
 #include "chastepuyo.h"
 #include "ray_chastefont.h"
 #include "ray_chastegraph.h"
+
+
+/*very useful debugging function and also allowing player to see puyos fall and match*/
+void second_delay()
+{
+ time_t temptime0,temptime1; /*for creating artificial delays so I can see if my functions are working right*/
+ 
+ time(&temptime0);
+ temptime1=temptime0;
+ temptime0+=1;
+ 
+ /*draw grid so it can be viewed during delay*/
+  BeginDrawing();
+  ray_draw_grid_puyo();
+  EndDrawing();
+ 
+ while(temptime1<temptime0)
+ {
+  time(&temptime1);
+  printf("Waiting for delay\n");
+ }
+ 
+}
+
+
+/*
+this function was in chastepuyo.h but it no longer was working after I added delays which require a function from chastegraph.h which required globals define in chastepuyo.h
+this is a workaround to that problem
+*/
+void puyo_set_block()
+{
+ int x,y;
+
+  /*draw block onto grid at it's current location*/
+  y=0;
+  while(y<max_block_width)
+  {
+   x=0;
+   while(x<max_block_width)
+   {
+    if(main_block.array[x+y*max_block_width]!=0)
+    {
+     main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
+    }
+    x+=1;
+   }
+   y+=1;
+  }
+
+ puyo_popped=4;
+ 
+ while(puyo_popped>=4)
+ {
+
+  puyo_fall();
+ 
+  printf("Puyo fall count %d\n",puyo_fall_count);
+ 
+  if(puyo_fall_count!=0)
+  {
+  second_delay();
+  }
+ 
+  puyo_match();
+ 
+  if(puyo_popped!=0)
+  {
+  second_delay();
+  }
+ 
+}
+
+
+ spawn_block();
+
+
+}
+
+/*all things about moving down*/
+void puyo_move_down()
+{
+ /*make backup of block location*/
+
+ temp_block=main_block;
+
+
+ main_block.y+=1;
+
+ last_move_fail=tetris_check_move();
+ if(last_move_fail)
+ {
+  main_block=temp_block;
+  /*printf("Block is finished\n");*/
+  puyo_set_block();
+  moves++; /*moves normally wouldn't be incremented because move check fails but setting a block is actually a valid move.*/
+ }
+ else
+ {
+  /*move was successful*/
+ }
+
+ last_move_fail=0; /*because moving down is always a valid operation, the fail variable should be set to 0*/
+
+ fputc(move_id,fp); /*moving down is always a valid move either for setting a block or moving it down*/
+}
 
 
 
@@ -84,7 +194,7 @@ void keyboard()
   move_id='S';
   sprintf(movetext,"Down Move");
 /*  printf("%s\n",movetext);*/
-  tetris_move_down();
+  puyo_move_down();
  }
  
  if(IsKeyPressed(KEY_W)||IsKeyPressed(KEY_UP))
@@ -157,7 +267,7 @@ void next_file_input()
   move_id=c;
 
   if(c=='W'){tetris_move_up();}
-  if(c=='S'){tetris_move_down();}
+  if(c=='S'){puyo_move_down();}
   if(c=='A'){tetris_move_left();}
   if(c=='D'){tetris_move_right();}
 
@@ -179,10 +289,7 @@ void next_file_input()
 
 
 
-/*more global variables to be defined before game loop function*/
-int block_size;
-int border_size;
-int grid_offset_x;
+
 
 
 /*
@@ -200,11 +307,11 @@ void screen_setup_centered()
 /*
 this is a function which is called by main after window is created. It is the game loop.
 */
-void ray_chastetris()
+void ray_chastepuyo()
 {
- int pixel,r,g,b;
  int x=0,y=0;
- //int *p=main_grid.array;
+
+
 
  /*the original graphics style on first Steam release*/
  block_size=height/grid_height;
@@ -280,93 +387,18 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
    anim_counter=0;
   }
 
- /*make backup of entire grid*/
-  temp_grid=main_grid;
 
-  /*draw block onto temp grid at it's current location*/
-  y=0;
-  while(y<max_block_width)
-  {
-   x=0;
-   while(x<max_block_width)
-   {
-    if(main_block.array[x+y*max_block_width]!=0)
-    {
-     if( temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]!=0 )
-     {
-      printf("Error: Block in Way\n");
-
-      /*because a collision has occurred. We will restore everything back to the way it was before block was moved.*/
-
-      break;
-     }
-     else
-     {
-      //temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.color;
-      temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
-     }
-    }
-    x+=1;
-   }
-   y+=1;
-  }
-
-
-
-/*display the tetris grid*/
-
- y=0;
- while(y<grid_height)
- {
-  x=0;
-  while(x<grid_width)
-  {
-   pixel=temp_grid.array[x+y*grid_width];
-   r=(pixel&0xFF0000)>>16;
-   g=(pixel&0x00FF00)>>8;
-   b=(pixel&0x0000FF);
-
-/*
- printf("x=%d y=%d ",x,y);
- printf("red=%d green=%d blue=%d\n",r,g,b);
-*/
-
-ray_block_color=(Color){r,g,b,255};
-
-//DrawRectangle(grid_offset_x+x*block_size,y*block_size,block_size,block_size,ray_block_color);
-DrawCircle( grid_offset_x+x*block_size+radius,y*block_size+radius, radius, ray_block_color);
-
-
-/*draw texture modified by the color of this block on the grid*/
-//DrawTexture(texture, grid_offset_x+x*block_size,y*block_size , ray_block_color);
-
-   x+=1;
-  }
-  y+=1;
- }
-
-
- /*draw the boundary walls original style*/
-//DrawRectangle(grid_offset_x-block_size,0*block_size,block_size,height,ray_border_color);
-//DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,block_size,height,ray_border_color);
-
- /*draw the boundary walls original style*/
-DrawRectangle(grid_offset_x-border_size,0*block_size,border_size,height,ray_border_color);
-DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,border_size,height,ray_border_color);
-
-
- /*end of drawing code for grid*/
-
-
-/*printf("last_move_spin==%d\n",last_move_spin);*/
+  ray_draw_grid_puyo();
 
 
   stats_func();
 
 
+  
   EndDrawing();
 
   keyboard();
+
 
 
  
@@ -384,9 +416,10 @@ DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,border_size,heigh
 
 
 
-
     
  }
+ 
+
 
  //UnloadFont(font); /*unload the font*/
  CloseWindow();
@@ -558,7 +591,7 @@ text_x=fontsize*8; /*position of text for game loop*/
  main_font=font_64; /*font should be size 64 before game loop*/
  
 
- ray_chastetris();
+ ray_chastepuyo();
 
  if(fp!=NULL){fclose(fp);}
  if(fp_input!=NULL){fclose(fp_input);}
