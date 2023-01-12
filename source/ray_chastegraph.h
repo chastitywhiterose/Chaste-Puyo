@@ -66,7 +66,7 @@ void (*stats_func)()=draw_stats_chaste_font;
  
   main_font=font_32;
 
-  sprintf(text,"Score %d",score);
+/*  sprintf(text,"Score %d",score);
   chaste_font_draw_string(text,text_x,main_font.char_height*6);
 
   sprintf(text,"Lines %d",lines_cleared_total);
@@ -77,14 +77,14 @@ void (*stats_func)()=draw_stats_chaste_font;
 
   sprintf(text,"Hold %c",hold_block.id);
   chaste_font_draw_string(text,text_x,main_font.char_height*9);
-
+*/
 
   sprintf(text,"Move %d",moves);
   chaste_font_draw_string(text,text_x,main_font.char_height*10);
-
+/*
   sprintf(text,"B2B %d",back_to_back);
   chaste_font_draw_string(text,text_x,main_font.char_height*11);
-  
+*/  
   time(&time1);
   
   seconds=time1-time0;
@@ -223,6 +223,61 @@ void chaste_checker_part()
   while(x<grid_width)
   {
    pixel=temp_grid.array[x+y*grid_width];
+   r=(pixel&0xFF0000)>>16;
+   g=(pixel&0x00FF00)>>8;
+   b=(pixel&0x0000FF);
+
+/*
+ printf("x=%d y=%d ",x,y);
+ printf("red=%d green=%d blue=%d\n",r,g,b);
+*/
+
+ray_block_color=(Color){r,g,b,255};
+
+//DrawRectangle(grid_offset_x+x*block_size,y*block_size,block_size,block_size,ray_block_color);
+DrawCircle( grid_offset_x+x*block_size+radius,y*block_size+radius, radius, ray_block_color);
+
+
+/*draw texture modified by the color of this block on the grid*/
+//DrawTexture(texture, grid_offset_x+x*block_size,y*block_size , ray_block_color);
+
+   x+=1;
+  }
+  y+=1;
+ }
+
+ 
+  /*draw the boundary walls original thick style*/
+//DrawRectangle(grid_offset_x-block_size,0*block_size,block_size,height,ray_border_color);
+//DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,block_size,height,ray_border_color);
+
+ /*draw the boundary walls new thin style*/
+DrawRectangle(grid_offset_x-border_size,0*block_size,border_size,height,ray_border_color);
+DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,border_size,height,ray_border_color);
+
+
+ /*end of drawing code for grid*/
+ 
+ }
+
+
+
+/*this function draws the grid but does not add the current block because it is bot meant to be shown during the drop/chain delay*/
+
+void ray_draw_grid_puyo_lite()
+ {
+  int x=0,y=0;
+  int pixel,r,g,b;
+ 
+ /*display the tetris grid*/
+
+ y=0;
+ while(y<grid_height)
+ {
+  x=0;
+  while(x<grid_width)
+  {
+   pixel=main_grid.array[x+y*grid_width];
    r=(pixel&0xFF0000)>>16;
    g=(pixel&0x00FF00)>>8;
    b=(pixel&0x0000FF);

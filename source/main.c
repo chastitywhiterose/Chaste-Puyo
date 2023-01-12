@@ -59,7 +59,7 @@ void second_delay()
  
  /*draw grid so it can be viewed during delay*/
   BeginDrawing();
-  ray_draw_grid_puyo();
+  ray_draw_grid_puyo_lite();
   EndDrawing();
  
  while(temptime1<temptime0)

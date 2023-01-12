@@ -80,8 +80,8 @@ void spawn_block()
  main_block.array[1+1*max_block_width]=colors[puyo1];
  main_block.array[1+2*max_block_width]=colors[puyo2];
 
- //puyo1=puyo2;
- //puyo2++;  puyo2%=3;
+ puyo1=puyo2;
+ puyo2++;  puyo2%=3;
 
  main_block.x=(grid_width-main_block.width_used)/2;
  main_block.y=0;
