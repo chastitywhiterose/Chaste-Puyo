@@ -44,11 +44,14 @@ int score=0;
 
 int empty_color=0x000000;
 
-
+//old tetris scoring vars
 int lines_cleared=0,lines_cleared_last=0,lines_cleared_total=0;
 
 
 int block_type=0;
+
+/*puyo scoring variables*/
+int puyo_dropped=0,puyo_popped_all=0,puyo_score=0;
 
 /*this section defines the colors the puyo will be based on their index values*/
 
@@ -275,6 +278,7 @@ void puyo_fill(int x,int y, int matchcolor, int setcolor)
 
 
 int puyo_popped;
+
 void puyo_match()
 {
  int x,y,color;
@@ -312,7 +316,7 @@ void puyo_match()
      puyo_fill(x,y,color,tempcolor);
     
     
-     printf("Puyo match count is %d\n",puyo_match_count);
+     //printf("Puyo match count is %d\n",puyo_match_count);
  
      if(puyo_match_count<4)
      {
@@ -349,7 +353,7 @@ void puyo_match()
 
 
 /*all things about moving up*/
-void tetris_move_up()
+void puyo_move_up()
 {
  temp_block=main_block;
  main_block.y-=1;
@@ -367,7 +371,7 @@ void tetris_move_up()
 
 
 /*all things about moving right*/
-void tetris_move_right()
+void puyo_move_right()
 {
  temp_block=main_block;
  main_block.x+=1;
@@ -384,7 +388,7 @@ void tetris_move_right()
 }
 
 /*all things about moving left*/
-void tetris_move_left()
+void puyo_move_left()
 {
  temp_block=main_block;
  main_block.x-=1;
@@ -398,44 +402,6 @@ void tetris_move_left()
  {
   main_block=temp_block;
  }
-}
-
-
-/*
-fancy right rotation system for T blocks only
-does not actually rotate. Rather tries to move a T block into another valid spot and simulate SRS rules
-*/
-void block_rotate_right_fancy_t()
-{
-
- if(main_block.id!='T')
- {
-  printf("Block is not T. No action will be taken.");return;
- }
-
- int x=0,y=0;
- 
- x=main_block.x;
- y=main_block.y;
-
-
- main_block.x=x-1;
- main_block.y=y+1;
- last_move_fail=tetris_check_move();
- if(last_move_fail)
- {
-  //printf("First fancy T Block spin attempt failed.");
-  
-  main_block.x=x-1;
-  main_block.y=y+2;
-  last_move_fail=tetris_check_move();
-  if(last_move_fail)
-  {
-   //printf("Second fancy T Block spin attempt failed.");
-  }
-
- }
-
 }
 
 
@@ -469,11 +435,6 @@ void block_rotate_right_basic()
  last_move_fail=tetris_check_move();
  if(last_move_fail)
  {
-  /*if basic rotation failed, try fancier*/
-  block_rotate_right_fancy_t();
- }
- if(last_move_fail)
- {
   /*if it still failed, revert block to before rotation*/
   main_block=temp_block;
  }
@@ -485,44 +446,6 @@ void block_rotate_right_basic()
 
 }
 
-
-
-/*
-fancy left rotation system for T blocks only
-does not actually rotate. Rather tries to move a T block into another valid spot and simulate SRS rules
-*/
-void block_rotate_left_fancy_t()
-{
-
- if(main_block.id!='T')
- {
-  printf("Block is not T. No action will be taken.");return;
- }
-
- int x=0,y=0;
- 
- x=main_block.x;
- y=main_block.y;
-
-
- main_block.x=x+1;
- main_block.y=y+1;
- last_move_fail=tetris_check_move();
- if(last_move_fail)
- {
-  //printf("First fancy T Block spin attempt failed.");
-  
-  main_block.x=x+1;
-  main_block.y=y+2;
-  last_move_fail=tetris_check_move();
-  if(last_move_fail)
-  {
-   //printf("Second fancy T Block spin attempt failed.");
-  }
-
- }
-
-}
 
 
 /*basic (non SRS) rotation system*/
@@ -552,11 +475,6 @@ temp_block=main_block;
 
  /*if rotation caused collision, restore to the backup before rotate.*/
  last_move_fail=tetris_check_move();
- if(last_move_fail)
- {
-  /*if basic rotation failed, try fancier*/
-  block_rotate_left_fancy_t();
- }
  if(last_move_fail)
  {
   /*if it still failed, revert block to before rotation*/
@@ -600,7 +518,6 @@ int saved_back_to_back; /*back to back score bonus*/
 
 int move_log_position;
 
-int saved_block_type;
 
 int saved_block_array[16],saved_main_block_width,saved_block_color,saved_block_id,saved_main_block_x,saved_block_y; /*to store all details of main block*/
 
@@ -608,7 +525,10 @@ int saved_hold_block_array[16],saved_hold_block_width,saved_hold_block_color,sav
 int saved_hold_used;
 
 int saved_score;
-int saved_lines_cleared_total;
+
+int saved_puyo_popped_all;
+int saved_puyo_dropped;
+int saved_puyo1,saved_puyo2;
 
 int save_exist=0;
 
@@ -617,20 +537,23 @@ struct tetris_block save_main_block,save_hold_block;
 /*
  a special function which saves all the important data in the game. This allows reloading to a previous position when I make a mistake.
 */
-void tetris_save_state()
+void puyo_save_state()
 {
  save_grid=main_grid;
 
  save_main_block=main_block;
  save_hold_block=hold_block;
 
- saved_block_type=block_type;
+ saved_puyo_dropped=puyo_dropped;
+ 
+ saved_puyo1=puyo1;
+ saved_puyo2=puyo2;
 
  saved_moves=moves;
  saved_frame=frame;
  saved_hold_used=hold_used;
  saved_score=score;
- saved_lines_cleared_total=lines_cleared_total;
+ saved_puyo_popped_all=puyo_popped_all;
  saved_back_to_back=back_to_back;
 
  move_log_position=ftell(fp); /*save position in the move log file*/
@@ -643,7 +566,7 @@ void tetris_save_state()
 /*
  a special function which loads the data previously saved. This allows reloading to a previous position when I make a mistake.
 */
-void tetris_load_state()
+void puyo_load_state()
 {
 
  if(save_exist==0)
@@ -657,13 +580,16 @@ void tetris_load_state()
  main_block=save_main_block;
  hold_block=save_hold_block;
 
- block_type=saved_block_type;
+ puyo_dropped=saved_puyo_dropped;
+ 
+ puyo1=saved_puyo1;
+ puyo2=saved_puyo2;
 
  moves=saved_moves;
  frame=saved_frame;
  hold_used=saved_hold_used;
  score=saved_score;
- lines_cleared_total=saved_lines_cleared_total;
+ puyo_popped_all=saved_puyo_popped_all;
  back_to_back=saved_back_to_back;
 
  fseek(fp,move_log_position,SEEK_SET);

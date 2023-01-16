@@ -48,7 +48,12 @@ int grid_offset_x;
 #include "ray_chastegraph.h"
 
 
-/*very useful debugging function and also allowing player to see puyos fall and match*/
+/*
+very useful debugging function and also allowing player to see puyos fall and match
+
+however, because it uses libc for time functions, seconds is an integer which leads to weird behavior depending on how close to the turn of a second a puyo is dropped
+However, this is always going to be useful if porting to a library that doesn't have timing functions. For most cases the raylib function will be used for Chaste Puyo.
+*/
 void second_delay()
 {
  time_t temptime0,temptime1; /*for creating artificial delays so I can see if my functions are working right*/
@@ -65,6 +70,34 @@ void second_delay()
  while(temptime1<temptime0)
  {
   time(&temptime1);
+  //printf("Waiting for delay\n");
+ }
+ 
+}
+
+
+/*
+very useful debugging function and also allowing player to see puyos fall and match
+
+This version uses a raylib function instead of the built in C time functions. This means a double instead of integer is used for more precision
+including delays less than 1 second
+*/
+void second_delay_raylib()
+{
+ double temptime0,temptime1; /*for creating artificial delays so I can see if my functions are working right*/
+ 
+ temptime0=GetTime();
+ temptime1=temptime0;
+ temptime0+=0.5;
+ 
+ /*draw grid so it can be viewed during delay*/
+  BeginDrawing();
+  ray_draw_grid_puyo_lite();
+  EndDrawing();
+ 
+ while(temptime1<temptime0)
+ {
+  temptime1=GetTime();
   printf("Waiting for delay\n");
  }
  
@@ -94,6 +127,8 @@ void puyo_set_block()
    }
    y+=1;
   }
+  
+  puyo_dropped+=2;
 
  puyo_popped=4;
  
@@ -106,14 +141,15 @@ void puyo_set_block()
  
   if(puyo_fall_count!=0)
   {
-  second_delay();
+  second_delay_raylib();
   }
  
   puyo_match();
  
   if(puyo_popped!=0)
   {
-  second_delay();
+  puyo_popped_all+=puyo_popped;
+  second_delay_raylib();
   }
  
 }
@@ -187,7 +223,7 @@ void keyboard()
   move_id='A';
   sprintf(movetext,"Left Move");
 /*  printf("%s\n",movetext);*/
-  tetris_move_left();
+  puyo_move_left();
  }
  if(IsKeyPressed(KEY_S)||IsKeyPressed(KEY_DOWN))
  {
@@ -202,26 +238,26 @@ void keyboard()
   move_id='W';
   sprintf(movetext,"Up Move");
   /*printf("%s\n",movetext);*/
-  tetris_move_up();
+  puyo_move_up();
  }
  if(IsKeyPressed(KEY_D)||IsKeyPressed(KEY_RIGHT))
  {
   move_id='D';
   sprintf(movetext,"Right Move");
 /*  printf("%s\n",movetext);*/
-  tetris_move_right();
+  puyo_move_right();
  }
 
 
  if(IsKeyPressed(KEY_COMMA))
  {
   /*printf("Game Loaded\n");*/
-  tetris_load_state();
+  puyo_load_state();
  }
  if(IsKeyPressed(KEY_PERIOD))
  {
   /*printf("Game Saved\n");*/
-  tetris_save_state();
+  puyo_save_state();
  }
  
 }
@@ -266,10 +302,10 @@ void next_file_input()
 
   move_id=c;
 
-  if(c=='W'){tetris_move_up();}
+  if(c=='W'){puyo_move_up();}
   if(c=='S'){puyo_move_down();}
-  if(c=='A'){tetris_move_left();}
-  if(c=='D'){tetris_move_right();}
+  if(c=='A'){puyo_move_left();}
+  if(c=='D'){puyo_move_right();}
 
   if(c=='Z'){block_rotate_left_basic();}
   if(c=='X'){block_rotate_right_basic();}
@@ -317,7 +353,7 @@ void ray_chastepuyo()
  block_size=height/grid_height;
  grid_offset_x=block_size*1; /*how far from the left size of the window the grid display is*/
  border_size=block_size; /*set custom border width alternative to block_size*/
- stats_func=draw_stats_chaste_font; 
+ stats_func=draw_stats_chaste_font_centered; 
  
  /*if the following function is called, screen is centered. Otherwise use old style.*/
  screen_setup_centered();
