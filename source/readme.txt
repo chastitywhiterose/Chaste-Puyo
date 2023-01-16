@@ -4,3 +4,5 @@ Since this is a clone of Chaste Tris, all controls are the same. Most notably ro
 Arrow keys or WASD for movement.
 
 Oddly enough, the hold feature from Tetris is also still available from Chaste Tris by pressing C. This violates Puyo Puyo rules but there is nothing to stop you from it.
+
+Saving and loading with . and , is also still allowed. This means building up extreme chains is possible because mistakes can be fixed.
