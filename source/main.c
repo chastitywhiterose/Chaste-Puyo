@@ -98,7 +98,7 @@ void second_delay_raylib()
  while(temptime1<temptime0)
  {
   temptime1=GetTime();
-  printf("Waiting for delay\n");
+  //printf("Waiting for delay\n");
  }
  
 }
@@ -137,7 +137,7 @@ void puyo_set_block()
 
   puyo_fall();
  
-  printf("Puyo fall count %d\n",puyo_fall_count);
+  //printf("Puyo fall count %d\n",puyo_fall_count);
  
   if(puyo_fall_count!=0)
   {
