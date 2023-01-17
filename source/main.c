@@ -65,6 +65,7 @@ void second_delay()
  /*draw grid so it can be viewed during delay*/
   BeginDrawing();
   ray_draw_grid_puyo_lite();
+  stats_func();
   EndDrawing();
  
  while(temptime1<temptime0)
@@ -93,6 +94,7 @@ void second_delay_raylib()
  /*draw grid so it can be viewed during delay*/
   BeginDrawing();
   ray_draw_grid_puyo_lite();
+  stats_func();
   EndDrawing();
  
  while(temptime1<temptime0)
@@ -149,7 +151,16 @@ void puyo_set_block()
   if(puyo_popped!=0)
   {
   puyo_popped_all+=puyo_popped;
+
+  chain++;
+  score+=100*puyo_popped*chain;
+  
   second_delay_raylib();
+  
+  }
+  else
+  {
+   chain=0;
   }
  
 }
@@ -405,18 +416,17 @@ time(&time0); /*get time before the game starts using time function*/
 
 
 while(!WindowShouldClose())   /* Loop until the user closes the window */
-
- {
+{
   BeginDrawing();
 
   ClearBackground((Color){0,0,0,255});
   
   /*do checker to part of the screen*/
-  chaste_checker_part();
+  chaste_checker_part_rgb();
 //  check_start_x--;
   check_start_y--;
   anim_counter++;
-  if(anim_counter==rect_size*2)
+  if(anim_counter==rect_size*anim_colors)
   {
 //   check_start_x=check_start_x1;
    check_start_y=check_start_y1;
@@ -489,7 +499,7 @@ while(!WindowShouldClose()) /*loop runs until key pressed*/
  sprintf(text,"Programming: Chastity White Rose");
  chaste_font_draw_string(text,text_x,main_font.char_height*5);
 
- sprintf(text,"Inspiration:    River Black Rose");
+ sprintf(text,"Inspiration: Puyo Puyo by SEGA");
  chaste_font_draw_string(text,text_x,main_font.char_height*6);
 
  sprintf(text,"Press Enter to Begin game.");
@@ -497,15 +507,18 @@ while(!WindowShouldClose()) /*loop runs until key pressed*/
 
  sprintf(text,"Email: chastitywhiterose@gmail.com");
  chaste_font_draw_string(text,text_x,main_font.char_height*10);
+ 
+  sprintf(text,"Be excellent to each other\nand party on dudes!");
+ chaste_font_draw_string(text,text_x,main_font.char_height*16);
 
  main_font=font_16;
 
  sprintf(text,"https://github.com/chastitywhiterose/chastetris");
  chaste_font_draw_string(text,text_x,main_font.char_height*24);
-
+ 
  main_font=font_8;
 
- sprintf(text,"All physics code in this game was written by Chastity White Rose using the C Programming Language.\nThe font handling is done with the font library Chastity wrote and named Chaste Font.\nRaylib is used for the graphics API including rectangles and textures.\nCredit goes to Alexey Pajitnov for creating the original Tetris game which Chaste Tris is based on.");
+ sprintf(text,"All physics code in this game was written by Chastity White Rose using the C Programming Language.\nThe font handling is done with the font library Chastity wrote and named Chaste Font.\nRaylib is used for the graphics API including rectangles and textures.\n\nCredit goes to Compile for creating the original Puyo Puyo game in 1991.\n\nThis game is a fork of Chaste Tris, a Tetris clone also made by Chastity.");
  chaste_font_draw_string(text,text_x,main_font.char_height*52);
 
 
@@ -594,7 +607,7 @@ int main(int argc, char **argv)
 */
 
 //title_screen_chaste_font();
-//welcome_screen_chaste_font();
+welcome_screen_chaste_font();
 
 /*
 optionally, close the window and end program after start screen

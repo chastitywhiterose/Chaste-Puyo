@@ -29,23 +29,24 @@ This is the original launch version which draws the stats on the right ride of t
  
   main_font=font_32;
 
- /* sprintf(text,"Score %d",score);
-  chaste_font_draw_string(text,text_x,main_font.char_height*6);*/
 
   sprintf(text,"Dropped %d",puyo_dropped);
-  chaste_font_draw_string(text,text_x,main_font.char_height*7);
+  chaste_font_draw_string(text,text_x,main_font.char_height*6);
 
   sprintf(text," Popped %d",puyo_popped_all);
+  chaste_font_draw_string(text,text_x,main_font.char_height*7);
+
+
+  sprintf(text,"Score %d",score);
   chaste_font_draw_string(text,text_x,main_font.char_height*8);
 
 
-
-/*  sprintf(text,"Hold %c",hold_block.id);
+  sprintf(text,"Chain %d",chain);
   chaste_font_draw_string(text,text_x,main_font.char_height*9);
-  */
+
 
   sprintf(text,"Move %d",moves);
-  chaste_font_draw_string(text,text_x,main_font.char_height*10);
+  chaste_font_draw_string(text,text_x,main_font.char_height*12);
 
 /*
   sprintf(text,"B2B %d",back_to_back);
@@ -139,6 +140,55 @@ void chaste_checker_part()
   y+=rect_size;
   }
  }
+ 
+ 
+ int anim_colors=6;
+ 
+   /*
+Chaste Checker, also known originally as Chastity Checker from my BBM library,has been revived
+This is an extremely fast checkerboard drawing routine.
+*/
+void chaste_checker_part_rgb()
+{
+ int x,y;
+
+ Color colors[100];
+ int index,index1;
+ 
+
+ colors[0]=(Color){255,0,0,255};
+ colors[1]=(Color){255,255,0,255};
+ colors[2]=(Color){0,255,0,255};
+ colors[3]=(Color){0,255,255,255};
+ colors[4]=(Color){0,0,255,255};
+ colors[5]=(Color){255,0,255,255};
+
+
+
+ index=0;
+ 
+ y=check_start_y;
+ while(y<height)
+ {
+  index1=index;
+  x=check_start_x;
+  while(x<width)
+  {
+   DrawRectangle(x,y,rect_size,rect_size,colors[index]);
+   index=(index+1)%anim_colors;
+   x+=rect_size;
+  }
+  index=(index1+1)%anim_colors;
+   
+  y+=rect_size;
+  }
+ }
+ 
+ 
+ 
+ 
+ 
+ 
 
  
  /*
