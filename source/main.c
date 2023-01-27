@@ -48,6 +48,30 @@ int grid_offset_x;
 #include "ray_chastegraph.h"
 
 
+
+/*
+ this updates the checker animation but the intitial variables are setup before the game loop
+ this has to be called not only during the main game loop but also during the delay function so that it still scrolls while waiting for puyo to fall or pop
+*/
+void update_animation()
+{
+
+  /*do checker to part of the screen*/
+  chaste_checker_part_rgb();
+//  check_start_x--;
+  check_start_y--;
+  anim_counter++;
+  if(anim_counter==rect_size*anim_colors)
+  {
+//   check_start_x=check_start_x1;
+   check_start_y=check_start_y1;
+   anim_counter=0;
+  }
+  
+}
+
+
+
 /*
 very useful debugging function and also allowing player to see puyos fall and match
 
@@ -62,15 +86,19 @@ void second_delay()
  temptime1=temptime0;
  temptime0+=1;
  
- /*draw grid so it can be viewed during delay*/
-  BeginDrawing();
-  ray_draw_grid_puyo_lite();
-  stats_func();
-  EndDrawing();
- 
  while(temptime1<temptime0)
  {
   time(&temptime1);
+  
+     /*draw grid so it can be viewed during delay*/
+  BeginDrawing();
+  update_animation();
+  ray_draw_grid_puyo_lite();
+  stats_func();
+  EndDrawing();
+  
+  
+  
   //printf("Waiting for delay\n");
  }
  
@@ -91,15 +119,22 @@ void second_delay_raylib()
  temptime1=temptime0;
  temptime0+=0.5;
  
- /*draw grid so it can be viewed during delay*/
-  BeginDrawing();
-  ray_draw_grid_puyo_lite();
-  stats_func();
-  EndDrawing();
+
  
  while(temptime1<temptime0)
  {
   temptime1=GetTime();
+  
+  
+   /*draw grid so it can be viewed during delay*/
+  BeginDrawing();
+  update_animation();
+  ray_draw_grid_puyo_lite();
+  stats_func();
+  EndDrawing();
+  
+  
+  
   //printf("Waiting for delay\n");
  }
  
@@ -136,6 +171,7 @@ void puyo_set_block()
  
  while(puyo_popped>=4)
  {
+ 
 
   puyo_fall();
  
@@ -143,7 +179,7 @@ void puyo_set_block()
  
   if(puyo_fall_count!=0)
   {
-  second_delay_raylib();
+   second_delay_raylib();
   }
  
   puyo_match();
@@ -154,6 +190,8 @@ void puyo_set_block()
 
   chain++;
   score+=100*puyo_popped*chain;
+  
+  if(chain>max_chain){max_chain=chain;}
   
   second_delay_raylib();
   
@@ -351,6 +389,8 @@ void screen_setup_centered()
 }
 
 
+
+
 /*
 this is a function which is called by main after window is created. It is the game loop.
 */
@@ -421,17 +461,7 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
 
   ClearBackground((Color){0,0,0,255});
   
-  /*do checker to part of the screen*/
-  chaste_checker_part_rgb();
-//  check_start_x--;
-  check_start_y--;
-  anim_counter++;
-  if(anim_counter==rect_size*anim_colors)
-  {
-//   check_start_x=check_start_x1;
-   check_start_y=check_start_y1;
-   anim_counter=0;
-  }
+  update_animation();
 
 
   ray_draw_grid_puyo();

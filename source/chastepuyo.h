@@ -51,7 +51,7 @@ int lines_cleared=0,lines_cleared_last=0,lines_cleared_total=0;
 int block_type=0;
 
 /*puyo scoring variables*/
-int puyo_dropped=0,puyo_popped_all=0,chain=0;
+int puyo_dropped=0,puyo_popped_all=0,chain=0,max_chain=0;
 
 /*this section defines the colors the puyo will be based on their index values*/
 

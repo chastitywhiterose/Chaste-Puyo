@@ -44,6 +44,8 @@ This is the original launch version which draws the stats on the right ride of t
   sprintf(text,"Chain %d",chain);
   chaste_font_draw_string(text,text_x,main_font.char_height*9);
 
+  sprintf(text,"MaxChain %d",max_chain);
+  chaste_font_draw_string(text,text_x,main_font.char_height*10);
 
   sprintf(text,"Move %d",moves);
   chaste_font_draw_string(text,text_x,main_font.char_height*12);
