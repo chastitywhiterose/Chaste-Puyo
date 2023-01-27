@@ -55,8 +55,10 @@ int puyo_dropped=0,puyo_popped_all=0,chain=0,max_chain=0;
 
 /*this section defines the colors the puyo will be based on their index values*/
 
+#define puyo_colors 6
+
 int puyo1=0,puyo2=1;
-int colors[]={0xFF0000,0x00FF00,0x0000FF};
+int colors[]={0xFF0000,0xFFFF00,0x00FF00,0x00FFFF,0x0000FF,0xFF00FF};
 
 void spawn_block()
 {
@@ -64,7 +66,7 @@ void spawn_block()
 
 
    main_block.width_used=3;
-   main_block.color=0xFFFF00;
+   main_block.color=0xFFFFFF;
 
  /*first erase current puyo block*/
  y=0;
@@ -84,7 +86,7 @@ void spawn_block()
  main_block.array[1+2*max_block_width]=colors[puyo2];
 
  puyo1=puyo2;
- puyo2++;  puyo2%=3;
+ puyo2++;  puyo2%=puyo_colors;
 
  main_block.x=(grid_width-main_block.width_used)/2;
  main_block.y=0;
