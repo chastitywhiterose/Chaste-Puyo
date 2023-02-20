@@ -39,8 +39,9 @@ int moves_tried=0; /*number of attempted moves*/
 int last_move_spin=0; /*was the last move a t spin?*/
 int last_move_fail; /*did the last move fail?*/
 int back_to_back=0;
-
 int score=0;
+
+char move_log[0x1000000]; /*large array to store moves*/
 
 int empty_color=0x000000;
 
@@ -158,6 +159,7 @@ int tetris_check_move()
   y+=1;
  }
 
+ move_log[moves]=move_id;
  moves++; /*move successful*/
  return 0;
 
@@ -363,7 +365,6 @@ void puyo_move_up()
  if(!last_move_fail)
  {
   last_move_spin=0;
-  fputc(move_id,fp);
  }
  else
  {
@@ -381,7 +382,6 @@ void puyo_move_right()
  if(!last_move_fail)
  {
   last_move_spin=0;
-  fputc(move_id,fp);
  }
  else
  {
@@ -398,7 +398,6 @@ void puyo_move_left()
  if(!last_move_fail)
  {
   last_move_spin=0;
-  fputc(move_id,fp);
  }
  else
  {
@@ -443,7 +442,6 @@ void block_rotate_right_basic()
  else
  {
   last_move_spin=1;
-  fputc(move_id,fp);
  }
 
 }
@@ -485,7 +483,6 @@ temp_block=main_block;
  else
  {
   last_move_spin=1;
-  fputc(move_id,fp);
  }
 
 }
@@ -510,7 +507,8 @@ void block_hold()
   main_block.x=main_block.spawn_x;
   main_block.y=main_block.spawn_y;
  }
- fputc(move_id,fp);
+ move_log[moves]=move_id; /*hold block is always valid move*/
+ moves=moves+1;
 }
 
 struct tetris_grid save_grid;

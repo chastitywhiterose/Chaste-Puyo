@@ -225,6 +225,7 @@ void puyo_move_down()
   main_block=temp_block;
   /*printf("Block is finished\n");*/
   puyo_set_block();
+  move_log[moves]=move_id;
   moves++; /*moves normally wouldn't be incremented because move check fails but setting a block is actually a valid move.*/
  }
  else
@@ -233,8 +234,6 @@ void puyo_move_down()
  }
 
  last_move_fail=0; /*because moving down is always a valid operation, the fail variable should be set to 0*/
-
- fputc(move_id,fp); /*moving down is always a valid move either for setting a block or moving it down*/
 }
 
 
@@ -671,6 +670,26 @@ text_x=fontsize*8; /*position of text for game loop*/
  
 
  ray_chastepuyo();
+ 
+ /*
+  After the game ends, we will attempt to save the movelog to a file.
+  Keeping the movelog in memory and only writing at the end speeds up the program and simplifies things.
+ */
+ 
+  /*open the file to record moves*/
+ sprintf(filename,"omovelog.txt");
+ fp=fopen(filename,"wb+");
+ if(fp==NULL){printf("Failed to create file \"%s\".\n",filename);}
+ else
+ {
+  x=0;
+  while(x<moves)
+  {
+   /*printf("%d %c\n",x,move_log[x]);*/
+   fputc(move_log[x],fp);
+   x++;
+  }
+ }
 
  if(fp!=NULL){fclose(fp);}
  if(fp_input!=NULL){fclose(fp_input);}
