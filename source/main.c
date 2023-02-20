@@ -312,6 +312,22 @@ void keyboard()
  }
  
  
+ if(IsKeyPressed(KEY_M))
+ {
+  if(IsSoundPlaying(music[music_index]))
+  {
+   printf("Music is playing. It will be stopped now.\n");
+   StopSound(music[music_index]);
+   music_on=0;
+  }
+  else
+  {
+   printf("Music is not playing. It will be started now.\n");
+   PlaySound(music[music_index]);
+   music_on=1;
+  }
+ }
+ 
  
    /*save states*/
  if(IsKeyPressed(KEY_I))
@@ -593,11 +609,13 @@ while(!WindowShouldClose()) /*loop runs until key pressed*/
   {
    printf("Music is playing. It will be stopped now.\n");
    StopSound(music[music_index]);
+   music_on=0;
   }
   else
   {
    printf("Music is not playing. It will be started now.\n");
    PlaySound(music[music_index]);
+   music_on=1;
   }
  }
  
