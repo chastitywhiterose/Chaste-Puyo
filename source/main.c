@@ -47,6 +47,7 @@ int grid_offset_x;
 #include "ray_gamesave.h"
 #include "ray_chastefont.h"
 #include "ray_chastegraph.h"
+#include "yinyang.h"
 
 
 
@@ -535,7 +536,7 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
 
   stats_func();
 
-
+  chaste_draw_yinyang();
   
   EndDrawing();
 
@@ -734,7 +735,11 @@ text_x=fontsize*8; /*position of text for game loop*/
 
 
  main_font=font_64; /*font should be size 64 before game loop*/
- 
+
+ init_circle();
+ circle_x=width*3/16;
+ circle_y=height*13/16;
+ circle_radius=height/6;
 
  ray_chastepuyo();
  
