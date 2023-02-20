@@ -11,11 +11,11 @@ const int height = 720;
 Color ray_block_color={255,255,255,255};
 Color ray_border_color={127,127,127,255};
 
-Texture2D texture; /*used when textures are used*/
-Sound sound; /*main sound played*/
-Sound sound1; /*others sounds played*/
+//Texture2D texture; /*used when textures are used*/
 
-
+Sound music[3]; /*array of music which can be loaded into*/
+int music_index=0;
+int music_on=1; /*whether music should be on*/
 
 int radius; //used for circles sometimes
 
@@ -542,7 +542,12 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
 
   keyboard();
 
-
+  /*if music has stopped playing then go to next track*/
+  if(music_on && !IsSoundPlaying(music[music_index]))
+  {
+   music_index=(music_index+1)%3;
+   PlaySound(music[music_index]);
+  }
 
  
  /*
@@ -574,11 +579,30 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
 /* this function is now the official welcome screen*/
 void welcome_screen_chaste_font()
 {
+ music_index=0; 
+ PlaySound(music[music_index]);
 
 /*before the game actually runs, optionally display a start screen*/
 while(!WindowShouldClose()) /*loop runs until key pressed*/
 {
  if(IsKeyPressed(KEY_ENTER)){break;}
+ 
+ if(IsKeyPressed(KEY_M))
+ {
+  if(IsSoundPlaying(music[music_index]))
+  {
+   printf("Music is playing. It will be stopped now.\n");
+   StopSound(music[music_index]);
+  }
+  else
+  {
+   printf("Music is not playing. It will be started now.\n");
+   PlaySound(music[music_index]);
+  }
+ }
+ 
+ 
+ 
  BeginDrawing();
  ClearBackground((Color){0,0,0,255});
 
@@ -621,6 +645,8 @@ while(!WindowShouldClose()) /*loop runs until key pressed*/
 
  EndDrawing();
 }
+
+ StopSound(music[music_index]); //stop title music before game begins
 
 }
 
@@ -674,10 +700,11 @@ int main(int argc, char **argv)
 
  //texture=LoadTexture("textures/star_face.png");
 
- //InitAudioDevice();      // Initialize audio device
+ InitAudioDevice();      // Initialize audio device
 
- //sound = LoadSound("./audio/respectfully.mp3"); //load the audio
- //sound1 = LoadSound("./audio/deluxe_spa_package.mp3"); //load the audio
+ music[0]=LoadSound("./music/Donkey_Kong_Country_2_Coming_Home_OC_ReMix.mp3");
+ music[1]=LoadSound("./music/Puyo_Puyo_I_Just_Skipped_Time_Yesterday_OC_ReMix.mp3");
+ music[2]=LoadSound("./music/Dr_Robotnik's_Mean_Bean_Machine_Blobby_Blob_Disco_OC_ReMix.mp3");
 
  //PlaySound(sound);
 
@@ -740,6 +767,9 @@ text_x=fontsize*8; /*position of text for game loop*/
  circle_x=width*3/16;
  circle_y=height*13/16;
  circle_radius=height/6;
+ 
+ music_index=1; 
+ PlaySound(music[music_index]); //start playing music just before game begins 
 
  ray_chastepuyo();
  
