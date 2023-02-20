@@ -3,6 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <raylib.h>
+#include <math.h>
 
 const int width = 1280;
 const int height = 720;
@@ -97,6 +98,7 @@ void second_delay()
   update_animation();
   ray_draw_grid_puyo_lite();
   stats_func();
+  chaste_draw_yinyang();
   EndDrawing();
   
   
@@ -133,9 +135,8 @@ void second_delay_raylib()
   update_animation();
   ray_draw_grid_puyo_lite();
   stats_func();
+  chaste_draw_yinyang();
   EndDrawing();
-  
-  
   
   //printf("Waiting for delay\n");
  }
@@ -532,7 +533,6 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
 
 
   ray_draw_grid_puyo();
-
 
   stats_func();
 
