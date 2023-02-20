@@ -49,8 +49,6 @@ int empty_color=0x000000;
 int lines_cleared=0,lines_cleared_last=0,lines_cleared_total=0;
 
 
-int block_type=0;
-
 /*puyo scoring variables*/
 int puyo_dropped=0,puyo_popped_all=0,chain=0,max_chain=0;
 
@@ -556,8 +554,6 @@ void puyo_save_state()
  saved_puyo_popped_all=puyo_popped_all;
  saved_back_to_back=back_to_back;
 
- move_log_position=ftell(fp); /*save position in the move log file*/
-
  printf("Game Saved at move %d\n",moves);
  save_exist=1;
 }
@@ -591,8 +587,6 @@ void puyo_load_state()
  score=saved_score;
  puyo_popped_all=saved_puyo_popped_all;
  back_to_back=saved_back_to_back;
-
- fseek(fp,move_log_position,SEEK_SET);
 
  printf("Game Loaded at move %d\n",moves);
 

@@ -284,7 +284,7 @@ DrawRectangle(grid_offset_x+grid_width*block_size,0*block_size,border_size,heigh
 
 
 
-/*this function draws the grid but does not add the current block because it is bot meant to be shown during the drop/chain delay*/
+/*this function draws the grid but does not add the current block because it is not meant to be shown during the drop/chain delay*/
 
 void ray_draw_grid_puyo_lite()
  {
