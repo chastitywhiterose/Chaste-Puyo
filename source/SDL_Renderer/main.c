@@ -7,6 +7,7 @@ This is a rewrite of the Raylib version of Chaste Puyo. It does not include musi
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include <SDL.h>
 
 /*
@@ -60,7 +61,7 @@ int main(int argc, char **argv)
  }
 
 /*high definition*/
- if(0){width=1920;height=1080; Window_Flags=SDL_WINDOW_FULLSCREEN_DESKTOP;}
+ if(1){width=1920;height=1080; Window_Flags=SDL_WINDOW_FULLSCREEN_DESKTOP;}
 
  if(SDL_Init(SDL_INIT_VIDEO)){printf( "SDL could not initialize! SDL_Error: %s\n",SDL_GetError());return -1;}
  window=SDL_CreateWindow( "SDL Chaste Tris",SDL_WINDOWPOS_CENTERED,SDL_WINDOWPOS_CENTERED,width,height,Window_Flags);
@@ -139,17 +140,4 @@ gcc -Wall -ansi -pedantic main.c -o main `sdl2-config --cflags --libs` && ./main
 
 Static Compile within Unix/Linux/msys
 gcc -Wall -ansi -pedantic main.c -o main `sdl2-config --cflags --static-libs` -static && ./main
-
-Compiling on Windows:
-
-can dynamic link with my msys install
-set PATH=C:\msys64\mingw32\bin;
-gcc -Wall -ansi -pedantic main.c -o main -IC:\msys64\mingw32\include\SDL2 -Dmain=SDL_main -LC:\msys64\mingw32\lib -lmingw32 -lSDL2main -lSDL2 && main
-
-More frequently, I compile with my official Windows install in C:\SDL
-set PATH=C:\TDM-GCC-32\bin;C:\SDL\bin;
-gcc -Wall -ansi -pedantic main.c -o main -IC:\SDL\include\SDL2 -Dmain=SDL_main -LC:\SDL\lib -lmingw32 -lSDL2main -lSDL2 && main
-
-can static compile too. (only works with my install in C:\SDL)
-gcc -Wall -ansi -pedantic main.c -o main -IC:\SDL\include\SDL2 -Dmain=SDL_main -LC:\SDL\lib -lmingw32 -lSDL2main -lSDL2 -mwindows  -Wl,--no-undefined -lm -ldinput8 -ldxguid -ldxerr8 -luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lshell32 -lsetupapi -lversion -luuid -static-libgcc -static && main
 */
