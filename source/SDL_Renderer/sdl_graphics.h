@@ -238,54 +238,17 @@ void screen_setup_centered()
  stats_func=draw_stats_chaste_font_centered;  /*if centered, alternate stats function is needed*/
 }
 
+
+
+
 /*
-this is a function which is called by main after window is created. It contains the game loop.
+this draws a lot of graphics including some of the above defined functions
+to make code managable I have put it here to make it easier to code the game loop
 */
-void sdl_chastetris()
+void draw_all_graphics()
 {
+ int x,y;
  int pixel,r,g,b;
- int x=0,y=0;
-
-
- block_size=height/grid_height;
- grid_offset_x=block_size*1; /*how far from the left size of the window the grid display is*/
- border_size=block_size;
-
- printf("block_size==%d\n",block_size);
-  
- /*if the following function is called, screen is centered. Otherwise use old left side style.*/
- screen_setup_centered();
-
- chastetris_info();
-
- spawn_block();
-
-
- /*first empty the grid*/
- y=0;
- while(y<grid_height)
- {
-  x=0;
-  while(x<grid_width)
-  {
-   main_grid.array[x+y*grid_width]=empty_color;
-   x+=1;
-  }
-  y+=1;
- }
-
-
- delay=1000/fps;
- 
- /*get time before the game starts using standard library time function*/
- time(&time0);
- 
- loop=1;
-  /* Loop until the user closes the window */
- while(loop)
- {
-  sdl_time = SDL_GetTicks();
-  sdl_time1 = sdl_time+delay;
 
   SDL_SetRenderDrawColor(renderer,0,0,0,255);
   SDL_RenderClear(renderer);
@@ -312,7 +275,7 @@ void sdl_chastetris()
      }
      else
      {
-      temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.color;
+      /*temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.color;*/
       temp_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
      }
     }
@@ -349,8 +312,16 @@ rect.y=y*block_size;
 rect.w=block_size;
 rect.h=block_size;
 
-SDL_RenderFillRect(renderer,&rect);
+/*SDL_RenderFillRect(renderer,&rect);*/
 
+/*create circle which fits perfectly into the square*/
+main_circle.radius=rect.w/2;
+main_circle.cx=rect.x+rect.w/2;
+main_circle.cy=rect.y+rect.h/2;
+main_circle.color=pixel;
+main_circle.slices_max=16;
+
+chaste_circle_draw_filled();
 
    x+=1;
   }
@@ -385,6 +356,143 @@ SDL_RenderFillRect(renderer,&rect);
  draw_input();
 
 
+ SDL_RenderPresent(renderer);
+}
+
+
+
+
+
+
+
+/*
+a very small but important function I wrote to delay a specified number of milliseconds
+this has vast implications for Chaste Puyo and Chaste Panel. Those games are timing based unlike Chaste Tris.
+*/
+
+void chaste_delay(int delay)
+{
+ int t0,t1;
+
+ t0=SDL_GetTicks();
+ t1=t0+delay;
+
+ while(t0<t1)
+ {
+  t0=SDL_GetTicks();
+ }
+
+}
+
+/*
+this function processes things like the score and combo counting
+it also has to redraw all the graphics of the game and do delays between the falling and popping of puyos!
+it is therefore the most complicated thing in this game!
+*/
+void puyo_process()
+{
+ puyo_popped=4;
+ while(puyo_popped>=4)
+ {
+  puyo_fall();
+  /*printf("Puyo fall count %d\n",puyo_fall_count);*/
+ 
+  if(puyo_fall_count!=0)
+  {
+   draw_all_graphics();
+   chaste_delay(500);
+  }
+ 
+  puyo_match();
+ 
+  if(puyo_popped!=0)
+  {
+  puyo_popped_all+=puyo_popped;
+
+  chain++;
+  score+=100*puyo_popped*chain;
+  
+  if(chain>max_chain){max_chain=chain;}
+  
+  draw_all_graphics();
+  chaste_delay(1000);
+  
+  }
+  else
+  {
+   chain=0;
+  }
+ 
+ }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
+this is a function which is called by main after window is created. It contains the game loop.
+*/
+void sdl_chastetris()
+{
+ 
+ int x=0,y=0;
+
+
+ block_size=height/grid_height;
+ grid_offset_x=block_size*1; /*how far from the left size of the window the grid display is*/
+ border_size=block_size;
+
+ printf("block_size==%d\n",block_size);
+  
+ /*if the following function is called, screen is centered. Otherwise use old left side style.*/
+ screen_setup_centered();
+
+ chastepuyo_info();
+
+ spawn_block();
+
+
+ /*first empty the grid*/
+ y=0;
+ while(y<grid_height)
+ {
+  x=0;
+  while(x<grid_width)
+  {
+   main_grid.array[x+y*grid_width]=empty_color;
+   x+=1;
+  }
+  y+=1;
+ }
+
+
+ delay=1000/fps;
+ 
+ /*get time before the game starts using standard library time function*/
+ time(&time0);
+ 
+ loop=1;
+  /* Loop until the user closes the window */
+ while(loop)
+ {
+  sdl_time = SDL_GetTicks();
+  sdl_time1 = sdl_time+delay;
+
+
+  draw_all_graphics();
+
+
+  puyo_process();
+
+
  /*optionally, get input from another file instead of keyboard if I have this enabled.*/
   next_file_input();
 
@@ -394,7 +502,6 @@ SDL_RenderFillRect(renderer,&rect);
   keyboard();
  }
 
- SDL_RenderPresent(renderer);
 
  /*time loop used to slow the game down so users can see it*/
  while(sdl_time<sdl_time1)

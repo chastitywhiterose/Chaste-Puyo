@@ -94,7 +94,7 @@ void spawn_block()
  main_block.spawn_y=main_block.y;
 }
 
-void chastetris_info()
+void chastepuyo_info()
 {
  printf("Welcome to the game \"%s\" by Chastity White Rose\n",gamename);
  printf("Email: chastitywhiterose@gmail.com for any questions!\n\n");
@@ -407,13 +407,8 @@ void puyo_move_left()
 
 
 
-
-
-
-
 /*
-this function was in chastepuyo.h but it no longer was working after I added delays which require a function from chastegraph.h which required globals define in chastepuyo.h
-this is a workaround to that problem
+this sets down the current puyo when it reaches the bottom and spawns the next
 */
 void puyo_set_block()
 {
@@ -436,43 +431,6 @@ void puyo_set_block()
   }
   
   puyo_dropped+=2;
-
- puyo_popped=4;
- 
- while(puyo_popped>=4)
- {
- 
-
-  puyo_fall();
- 
-  /*printf("Puyo fall count %d\n",puyo_fall_count);*/
- 
-  if(puyo_fall_count!=0)
-  {
-   /*second_delay_raylib();*/
-  }
- 
-  puyo_match();
- 
-  if(puyo_popped!=0)
-  {
-  puyo_popped_all+=puyo_popped;
-
-  chain++;
-  score+=100*puyo_popped*chain;
-  
-  if(chain>max_chain){max_chain=chain;}
-  
-  /*second_delay_raylib();*/
-  
-  }
-  else
-  {
-   chain=0;
-  }
- 
-}
-
 
  spawn_block();
 

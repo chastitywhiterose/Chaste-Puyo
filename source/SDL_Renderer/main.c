@@ -45,6 +45,7 @@ FILE *fp_input; /*file to get input from instead of the keyboard*/
 #include "chaste_the_rainbow.h"
 #include "sdl_chastefont_texture.h"
 #include "sdl_input.h"
+#include "sdl_chaste_circle_render.h"
 #include "sdl_graphics.h"
 
 int main(int argc, char **argv)
