@@ -400,7 +400,7 @@ void puyo_process()
   if(puyo_fall_count!=0)
   {
    draw_all_graphics();
-   chaste_delay(500);
+   chaste_delay(1000);
   }
  
   puyo_match();

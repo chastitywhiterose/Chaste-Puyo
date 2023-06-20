@@ -142,6 +142,10 @@ void keyboard()
      moves++;
     break;
 
+    case SDLK_t:
+     /*puyo_fall_test();*/
+    break;
+
    }
 
   }

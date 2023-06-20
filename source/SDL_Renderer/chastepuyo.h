@@ -164,7 +164,7 @@ int tetris_check_move()
 }
 
 
-void tetris_clear_screen()
+void puyo_clear_screen()
 {
  int x,y;
  y=0;
@@ -187,25 +187,23 @@ int puyo_fall_count;
 
 void puyo_fall()
 {
- int x,y,xcount,y1;
+ int x,y,y1;
 
-/* printf("Time to make lines fall\n");*/
+ /*printf("Time to make lines fall\n");*/
 
-puyo_fall_count=0;
+ puyo_fall_count=0;
 
  y=grid_height;
  while(y>0)
  {
   y-=1;
 
-  xcount=0;
   x=0;
   while(x<grid_width)
   {
    if(main_grid.array[x+y*grid_width]==empty_color) /*if a spot is empty, find things above to fill it with.*/
    {
-   
-   /*printf("grid space of X=%d Y=%d is empty.\n",x,y);*/
+    /*printf("grid space of X=%d Y=%d is empty.\n",x,y);*/
    
    y1=y;
    while(y1>0)
@@ -218,25 +216,24 @@ puyo_fall_count=0;
      main_grid.array[x+y1*grid_width]=empty_color; /*make space above empty now that is has been moved*/
      
      puyo_fall_count++;
-    
-     /*printf("X=%d Y=%d moved to X=%d Y=%d\n",x,y1,x,y);*/
-
      break;
     }
-    
    }
-    
-    xcount++;
-   }
+  }
    
    x+=1;
   }
-
-  /*printf("row %d xcount %d\n",y,xcount);*/
-
  }
-
 }
+
+
+
+
+
+
+
+
+
 
 
 
