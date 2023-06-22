@@ -394,13 +394,17 @@ void puyo_process()
  puyo_popped=4;
  while(puyo_popped>=4)
  {
-  puyo_fall();
   /*printf("Puyo fall count %d\n",puyo_fall_count);*/
- 
-  if(puyo_fall_count!=0)
+  /*
+   we set the puyo fall found to 1 just to make the while loop start
+   but it will only continue if there are any puyo that actually fall
+  */
+  puyo_fall_count=1;
+  while(puyo_fall_count!=0)
   {
+   puyo_fall_one();
    draw_all_graphics();
-   chaste_delay(1000);
+   if(puyo_fall_count!=0){chaste_delay(100);}
   }
  
   puyo_match();
@@ -415,7 +419,7 @@ void puyo_process()
   if(chain>max_chain){max_chain=chain;}
   
   draw_all_graphics();
-  chaste_delay(1000);
+  chaste_delay(500);
   
   }
   else
@@ -440,7 +444,7 @@ void puyo_process()
 /*
 this is a function which is called by main after window is created. It contains the game loop.
 */
-void sdl_chastetris()
+void sdl_chastepuyo()
 {
  
  int x=0,y=0;

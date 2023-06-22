@@ -181,7 +181,11 @@ void puyo_clear_screen()
 }
 
 
-/*lines fall down to previously cleared line spaces*/
+/*
+lines fall down to previously cleared line spaces
+this is the original function but has been replaced by a better one
+I am keeping this for the sake of history and because it still shows chains correctly
+*/
 
 int puyo_fall_count;
 
@@ -229,6 +233,32 @@ void puyo_fall()
 
 
 
+/*
+ this function makes the puyo fall only one grid space and delay each time
+ it makes it look like they are actually falling and is the superior version of the original function
+*/
+void puyo_fall_one()
+{
+ int x,y;
+ puyo_fall_count=0;
+
+ x=0;
+ while(x<grid_width)
+ {
+  y=grid_height-1;
+  while(y>0 && main_grid.array[x+y*grid_width]!=empty_color)
+  {
+   y--;
+  }
+  while(y>0)
+  {
+   if(main_grid.array[x+(y-1)*grid_width]!=empty_color){puyo_fall_count++;}
+   main_grid.array[x+y*grid_width]=main_grid.array[x+(y-1)*grid_width];
+   y--;
+  }
+  x+=1;
+ }
+}
 
 
 
@@ -325,8 +355,8 @@ void puyo_match()
      else
      {
       puyo_popped=puyo_match_count;
-      printf("4 or more puyo are connected!\n");
-      printf("They shall be erased\n");
+      /*printf("4 or more puyo are connected!\n");
+      printf("They shall be erased\n");*/
       puyo_fill(x,y,0xFFFFFF,empty_color);
      }
  
