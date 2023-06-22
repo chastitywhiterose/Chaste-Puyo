@@ -20,6 +20,7 @@ This is the original launch version which draws the stats on the right ride of t
  
  void draw_stats_chaste_font_centered()
  {
+  int scale=8;
   main_font=font_64;
 
   //text_x=main_font.char_height*1/2;
@@ -50,11 +51,6 @@ This is the original launch version which draws the stats on the right ride of t
   sprintf(text,"Move %d",moves);
   chaste_font_draw_string(text,text_x,main_font.char_height*12);
 
-/*
-  sprintf(text,"B2B %d",back_to_back);
-  chaste_font_draw_string(text,text_x,main_font.char_height*11);
-*/ 
- 
   time(&time1);
   
   seconds=time1-time0;
@@ -63,6 +59,22 @@ This is the original launch version which draws the stats on the right ride of t
   
   sprintf(text,"Time %d:%02d",minutes,seconds);
   chaste_font_draw_string(text,text_x,main_font.char_height*13);
+
+  main_font=font_8;
+
+ /*rainbow section*/
+ chaste_palette_index=chaste_palette_index1;
+  
+  chaste_font_draw_string_scaled_special("Chaste\n Puyo",text_x,32,scale);
+  
+  chaste_palette_index1++;
+  if(chaste_palette_index1>=chaste_palette_length)
+  {
+   chaste_palette_index1=0;
+  }
+ /*rainbow section end*/
+ 
+
 
  }
  

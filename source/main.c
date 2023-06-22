@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <time.h>
 #include <raylib.h>
 #include <math.h>
@@ -35,8 +36,6 @@ int blocks_used=7;
 char text[0x200];
 char movetext[256],move_id;
 
-Font font;
-int fontsize=height/12;
 int text_x; /*the x position of where text will go*/
 
 /*more global variables to be defined before game loop function*/
@@ -46,6 +45,7 @@ int grid_offset_x;
 
 #include "chastepuyo.h"
 #include "ray_gamesave.h"
+#include "chaste_the_rainbow.h"
 #include "ray_chastefont.h"
 #include "ray_chastegraph.h"
 #include "yinyang.h"
@@ -585,7 +585,7 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
  
 
 
- //UnloadFont(font); /*unload the font*/
+
  CloseWindow();
  
 }
@@ -595,6 +595,8 @@ while(!WindowShouldClose())   /* Loop until the user closes the window */
 /* this function is now the official welcome screen*/
 void welcome_screen_chaste_font()
 {
+ int scale=8;
+
  music_index=0; 
  PlaySound(music[music_index]);
 
@@ -628,8 +630,10 @@ while(!WindowShouldClose()) /*loop runs until key pressed*/
 
  text_x=main_font.char_height*1;
 
- sprintf(text,"%s",gamename);
- chaste_font_draw_string(text,text_x,main_font.char_height*1);
+ /*sprintf(text,"%s",gamename);
+ chaste_font_draw_string(text,text_x,main_font.char_height*1);*/
+
+
 
 
  main_font=font_32;
@@ -660,6 +664,19 @@ while(!WindowShouldClose()) /*loop runs until key pressed*/
  sprintf(text,"All physics code in this game was written by Chastity White Rose using the C Programming Language.\nThe font handling is done with the font library Chastity wrote and named Chaste Font.\nRaylib is used for the graphics API including rectangles and textures.\n\nCredit goes to Compile for creating the original Puyo Puyo game in 1991.\n\nThis game is a fork of Chaste Tris, a Tetris clone also made by Chastity.");
  chaste_font_draw_string(text,text_x,main_font.char_height*52);
 
+
+ /*rainbow section*/
+ chaste_palette_index=chaste_palette_index1;
+  
+  sprintf(text,"%s",gamename);
+  chaste_font_draw_string_scaled_special(text,text_x,64,scale);
+  
+  chaste_palette_index1++;
+  if(chaste_palette_index1>=chaste_palette_length)
+  {
+   chaste_palette_index1=0;
+  }
+ /*rainbow section end*/
 
  EndDrawing();
 }
@@ -748,6 +765,9 @@ int main(int argc, char **argv)
  font_128=chaste_font_load("./font/Tetris Font 128.png");
 */
 
+ chaste_palette_rainbow(40);
+ /*chaste_palette_view();*/
+
 //title_screen_chaste_font();
 welcome_screen_chaste_font();
 
@@ -757,7 +777,6 @@ this is great when testing something that hasn't been debugged
 */
  //CloseWindow(); return 0;
 
-text_x=fontsize*8; /*position of text for game loop*/
 
 
  /*open the file to record moves*/

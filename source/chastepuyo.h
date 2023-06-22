@@ -323,7 +323,7 @@ void puyo_match()
      if(puyo_match_count<4)
      {
       //printf("It is less than 4 and will be reverted.\n");
-      puyo_fill(x,y,0xFFFFFF,color);
+      puyo_fill(x,y,tempcolor,color);
      }
      else
      {
