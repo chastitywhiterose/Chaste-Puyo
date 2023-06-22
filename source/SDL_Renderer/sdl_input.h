@@ -143,7 +143,7 @@ void keyboard()
     break;
 
     case SDLK_t:
-     /*puyo_fall_test();*/
+     test();
     break;
 
    }

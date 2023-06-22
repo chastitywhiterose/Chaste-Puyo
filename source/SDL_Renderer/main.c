@@ -43,6 +43,7 @@ FILE *fp_input; /*file to get input from instead of the keyboard*/
 
 #include "chastepuyo.h"
 #include "chastepuyo_gamesave.h"
+#include "chastepuyo_test.h"
 #include "chaste_the_rainbow.h"
 #include "sdl_chastefont_texture.h"
 #include "sdl_input.h"
