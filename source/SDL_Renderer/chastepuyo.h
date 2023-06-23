@@ -239,9 +239,8 @@ void puyo_fall()
 */
 void puyo_fall_one()
 {
- int x,y;
+ int x,y,y1;
  puyo_fall_count=0;
-
  x=0;
  while(x<grid_width)
  {
@@ -252,8 +251,10 @@ void puyo_fall_one()
   }
   while(y>0)
   {
-   if(main_grid.array[x+(y-1)*grid_width]!=empty_color){puyo_fall_count++;}
-   main_grid.array[x+y*grid_width]=main_grid.array[x+(y-1)*grid_width];
+   y1=y-1;
+   if(main_grid.array[x+y1*grid_width]!=empty_color){puyo_fall_count++;}
+   main_grid.array[x+y*grid_width]=main_grid.array[x+y1*grid_width];
+   main_grid.array[x+y1*grid_width]=empty_color;
    y--;
   }
   x+=1;
