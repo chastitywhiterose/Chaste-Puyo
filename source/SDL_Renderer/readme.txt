@@ -5,7 +5,7 @@ This project is a port of a previous game I made using Raylib. It is a clone of 
 
 This version and the original were both initially created by copying and rewriting several functions in my previous game: Chaste Tris. The game is close enough that some functions did not need modification.
 
-To support my programming work, please buy the original version on either Steam or itch.io
+To support my programming work, please buy my original Tetris game on either Steam or itch.io
 
 https://store.steampowered.com/app/1986120/Chaste_Tris/
 https://chastitywhiterose.itch.io/chaste-tris

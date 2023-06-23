@@ -120,15 +120,11 @@ void keyboard()
     /*end of save state managing keys*/
     
     /*
-     keys after this are for marking special places during the game
-     They do not currently rewind the movelog but are written to it so that when reading from it later I can see those positions
-     This is very much a debugging feature for analyzing Tetris patterns.
-     The idea is that I would write an entirely separate program to then repeat the pattern and create movelogs based on them.
-     Also, they are ignored when the game reads from the input move log.
-     There is no need to worry about manually removing them with a text editor.
+     keys after this are for marking special places in the movelog or testing new features
+     This is very much a debugging feature for my analyzing patterns. They should be commented out in release versions
     */
     
-    case SDLK_LEFTBRACKET:
+    /*case SDLK_LEFTBRACKET:
      printf("SDLK_LEFTBRACKET:\nBeginning of Loop\n");
      move_id='[';
      log_loop_begin=moves;
@@ -140,7 +136,7 @@ void keyboard()
      move_id=']';
      move_log[moves]=move_id;
      moves++;
-    break;
+    break;*/
 
     case SDLK_t:
      test();
