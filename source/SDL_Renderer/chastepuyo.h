@@ -63,9 +63,8 @@ void spawn_block()
 {
  int x,y;
 
-
-   main_block.width_used=3;
-   main_block.color=0xFFFFFF;
+ main_block.width_used=3;
+ main_block.color=0xFFFFFF;
 
  /*first erase current puyo block*/
  y=0;
@@ -460,7 +459,7 @@ void puyo_set_block()
   
   puyo_dropped+=2;
 
- spawn_block();
+  spawn_block();
 
 
 }
@@ -474,7 +473,7 @@ void puyo_set_block()
 
 
 
-
+int block_was_set=0;
 
 
 /*all things about moving down*/
@@ -494,6 +493,7 @@ void puyo_move_down()
   /*printf("Block is finished\n");*/
 
   puyo_set_block();
+  block_was_set=1;
 
   move_log[moves]=move_id;
   moves++; /*moves normally wouldn't be incremented because move check fails but setting a block is actually a valid move.*/
@@ -501,6 +501,7 @@ void puyo_move_down()
  else
  {
   /*move was successful*/
+  block_was_set=0;
  }
 
  last_move_fail=0; /*because moving down is always a valid operation, the fail variable should be set to 0*/
@@ -635,88 +636,7 @@ void block_hold()
  moves=moves+1;
 }
 
-struct tetris_grid save_grid;
-int saved_moves; /*number of valid moves*/
-int saved_frame;  /*current animation frame*/
-int saved_back_to_back; /*back to back score bonus*/
 
-int move_log_position;
-
-
-int saved_block_array[16],saved_main_block_width,saved_block_color,saved_block_id,saved_main_block_x,saved_block_y; /*to store all details of main block*/
-
-int saved_hold_block_array[16],saved_hold_block_width,saved_hold_block_color,saved_hold_block_id,saved_hold_main_block_x,saved_hold_block_y; /*to store all details of main block*/
-int saved_hold_used;
-
-int saved_score;
-
-int saved_puyo_popped_all;
-int saved_puyo_dropped;
-int saved_puyo1,saved_puyo2;
-
-int save_exist=0;
-
-struct tetris_block save_main_block,save_hold_block;
-
-/*
- a special function which saves all the important data in the game. This allows reloading to a previous position when I make a mistake.
-*/
-void puyo_save_state()
-{
- save_grid=main_grid;
-
- save_main_block=main_block;
- save_hold_block=hold_block;
-
- saved_puyo_dropped=puyo_dropped;
- 
- saved_puyo1=puyo1;
- saved_puyo2=puyo2;
-
- saved_moves=moves;
- saved_frame=frame;
- saved_hold_used=hold_used;
- saved_score=score;
- saved_puyo_popped_all=puyo_popped_all;
- saved_back_to_back=back_to_back;
-
- printf("Game Saved at move %d\n",moves);
- save_exist=1;
-}
-
-
-/*
- a special function which loads the data previously saved. This allows reloading to a previous position when I make a mistake.
-*/
-void puyo_load_state()
-{
-
- if(save_exist==0)
- {
-  printf("No save exists yet.\n");
-  return;
- }
-
- main_grid=save_grid;
-
- main_block=save_main_block;
- hold_block=save_hold_block;
-
- puyo_dropped=saved_puyo_dropped;
- 
- puyo1=saved_puyo1;
- puyo2=saved_puyo2;
-
- moves=saved_moves;
- frame=saved_frame;
- hold_used=saved_hold_used;
- score=saved_score;
- puyo_popped_all=saved_puyo_popped_all;
- back_to_back=saved_back_to_back;
-
- printf("Game Loaded at move %d\n",moves);
-
-}
 
 
 

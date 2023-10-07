@@ -56,14 +56,6 @@ void keyboard()
      puyo_move_right();
     break;
 
-
-    case SDLK_COMMA:
-     puyo_load_state();
-    break;
-    case SDLK_PERIOD:
-     puyo_save_state();
-    break;
-    
     /*keys after this are for other save states*/
     
     case SDLK_i:

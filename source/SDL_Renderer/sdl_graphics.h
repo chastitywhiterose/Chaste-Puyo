@@ -238,8 +238,11 @@ void screen_setup_centered()
  stats_func=draw_stats_chaste_font_centered;  /*if centered, alternate stats function is needed*/
 }
 
-
-
+/*
+a flag that determines if the block(the two current puyos) should be drawn or not.
+this is because it should not be drawn during the animation of chains
+*/
+int block_draw=1;
 
 /*
 this draws a lot of graphics including some of the above defined functions
@@ -255,6 +258,10 @@ void draw_all_graphics()
 
  /*make backup of entire grid*/
   temp_grid=main_grid;
+
+/*draw(copy) the block to the grid if the block_draw flag is on*/
+if(block_draw)
+{
 
   /*draw block onto temp grid at it's current location*/
   y=0;
@@ -284,6 +291,8 @@ void draw_all_graphics()
    y+=1;
   }
 
+
+} /*end of block draw section*/
 
 
 /*display the puyo grid*/
@@ -391,6 +400,7 @@ it is therefore the most complicated thing in this game!
 */
 void puyo_process()
 {
+
  puyo_popped=4;
  while(puyo_popped>=4)
  {
@@ -428,6 +438,8 @@ void puyo_process()
   }
  
  }
+
+
 
 }
 
@@ -493,9 +505,17 @@ void sdl_chastepuyo()
 
   draw_all_graphics();
 
-
+ /*
+  process the falls and pops only if the two puyos were set by pressing down with collision
+  this enhances performance by not calling it wastefully
+ */
+ if(block_was_set)
+ {
+  block_draw=0;
   puyo_process();
-
+  block_draw=1;
+  block_was_set=0;
+ }
 
  /*optionally, get input from another file instead of keyboard if I have this enabled.*/
   next_file_input();
