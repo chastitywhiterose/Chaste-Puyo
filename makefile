@@ -1,4 +1,4 @@
 push:
 	git add .
-	git commit -m "Chaste Panel Update"
+	git commit -m "Chaste Puyo Update"
 	git push
