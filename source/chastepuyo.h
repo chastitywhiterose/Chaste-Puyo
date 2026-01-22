@@ -45,7 +45,7 @@ char move_log[0x1000000]; /*large array to store moves*/
 
 int empty_color=0x000000;
 
-//old tetris scoring vars
+/*old tetris scoring vars. may be removed later*/
 int lines_cleared=0,lines_cleared_last=0,lines_cleared_total=0;
 
 
@@ -63,9 +63,8 @@ void spawn_block()
 {
  int x,y;
 
-
-   main_block.width_used=3;
-   main_block.color=0xFFFFFF;
+ main_block.width_used=3;
+ main_block.color=0xFFFFFF;
 
  /*first erase current puyo block*/
  y=0;
@@ -94,7 +93,7 @@ void spawn_block()
  main_block.spawn_y=main_block.y;
 }
 
-void chastetris_info()
+void chastepuyo_info()
 {
  printf("Welcome to the game \"%s\" by Chastity White Rose\n",gamename);
  printf("Email: chastitywhiterose@gmail.com for any questions!\n\n");
@@ -164,7 +163,7 @@ int tetris_check_move()
 }
 
 
-void tetris_clear_screen()
+void puyo_clear_screen()
 {
  int x,y;
  y=0;
@@ -181,31 +180,33 @@ void tetris_clear_screen()
 }
 
 
-/*lines fall down to previously cleared line spaces*/
+/*
+lines fall down to previously cleared line spaces
+this is the original function but has been replaced by a better one
+I am keeping this for the sake of history and because it still shows chains correctly
+*/
 
 int puyo_fall_count;
 
 void puyo_fall()
 {
- int x,y,xcount,y1;
+ int x,y,y1;
 
-/* printf("Time to make lines fall\n");*/
+ /*printf("Time to make lines fall\n");*/
 
-puyo_fall_count=0;
+ puyo_fall_count=0;
 
  y=grid_height;
  while(y>0)
  {
   y-=1;
 
-  xcount=0;
   x=0;
   while(x<grid_width)
   {
    if(main_grid.array[x+y*grid_width]==empty_color) /*if a spot is empty, find things above to fill it with.*/
    {
-   
-   //printf("grid space of X=%d Y=%d is empty.\n",x,y);
+    /*printf("grid space of X=%d Y=%d is empty.\n",x,y);*/
    
    y1=y;
    while(y1>0)
@@ -218,25 +219,51 @@ puyo_fall_count=0;
      main_grid.array[x+y1*grid_width]=empty_color; /*make space above empty now that is has been moved*/
      
      puyo_fall_count++;
-    
-     //printf("X=%d Y=%d moved to X=%d Y=%d\n",x,y1,x,y);
-
      break;
     }
-    
    }
-    
-    xcount++;
-   }
+  }
    
    x+=1;
   }
-
-  /*printf("row %d xcount %d\n",y,xcount);*/
-
  }
-
 }
+
+
+
+
+/*
+ this function makes the puyo fall only one grid space and delay each time
+ it makes it look like they are actually falling and is the superior version of the original function
+*/
+void puyo_fall_one()
+{
+ int x,y,y1;
+ puyo_fall_count=0;
+ x=0;
+ while(x<grid_width)
+ {
+  y=grid_height-1;
+  while(y>0 && main_grid.array[x+y*grid_width]!=empty_color)
+  {
+   y--;
+  }
+  while(y>0)
+  {
+   y1=y-1;
+   if(main_grid.array[x+y1*grid_width]!=empty_color){puyo_fall_count++;}
+   main_grid.array[x+y*grid_width]=main_grid.array[x+y1*grid_width];
+   main_grid.array[x+y1*grid_width]=empty_color;
+   y--;
+  }
+  x+=1;
+ }
+}
+
+
+
+
+
 
 
 
@@ -247,7 +274,7 @@ int testcolor=0xFFFF00;
 void puyo_fill(int x,int y, int matchcolor, int setcolor)
 {
 
- //printf("checking X=%d Y=%d\n",x,y);
+ /*printf("checking X=%d Y=%d\n",x,y);*/
 
  if(matchcolor==setcolor){printf("Match and set colors are same! This is failure!\n");return;}
 
@@ -267,7 +294,7 @@ void puyo_fill(int x,int y, int matchcolor, int setcolor)
   puyo_fill(x,y-1,matchcolor,setcolor);
   puyo_fill(x,y+1,matchcolor,setcolor);
   
-  //printf("done\n");
+  /*printf("done\n");*/
  }
  else
  {
@@ -300,15 +327,15 @@ void puyo_match()
    if(main_grid.array[x+y*grid_width]!=empty_color) /*if a spot is empty, find things above to fill it with.*/
    {
    
-    //printf("grid space of X=%d Y=%d is not empty.\n",x,y);
+    /*printf("grid space of X=%d Y=%d is not empty.\n",x,y);*/
     
     color=main_grid.array[x+y*grid_width];
     
-    //printf("Color is %06X\n",color);
+    /*printf("Color is %06X\n",color);*/
     
     if(color==tempcolor)
     {
-     //printf("Color is already %06X and will be ignored\n",tempcolor);
+     /*printf("Color is already %06X and will be ignored\n",tempcolor);*/
     }
     else
     {
@@ -318,18 +345,18 @@ void puyo_match()
      puyo_fill(x,y,color,tempcolor);
     
     
-     //printf("Puyo match count is %d\n",puyo_match_count);
+     /*printf("Puyo match count is %d\n",puyo_match_count);*/
  
      if(puyo_match_count<4)
      {
-      //printf("It is less than 4 and will be reverted.\n");
+      /*printf("It is less than 4 and will be reverted.\n");*/
       puyo_fill(x,y,tempcolor,color);
      }
      else
      {
       puyo_popped=puyo_match_count;
-      printf("4 or more puyo are connected!\n");
-      printf("They shall be erased\n");
+      /*printf("4 or more puyo are connected!\n");
+      printf("They shall be erased\n");*/
       puyo_fill(x,y,0xFFFFFF,empty_color);
      }
  
@@ -402,6 +429,106 @@ void puyo_move_left()
   main_block=temp_block;
  }
 }
+
+
+
+
+
+/*
+this sets down the current puyo when it reaches the bottom and spawns the next
+*/
+void puyo_set_block()
+{
+ int x,y;
+
+  /*draw block onto main grid at it's current location*/
+  y=0;
+  while(y<max_block_width)
+  {
+   x=0;
+   while(x<max_block_width)
+   {
+    if(main_block.array[x+y*max_block_width]!=0)
+    {
+     main_grid.array[main_block.x+x+(main_block.y+y)*grid_width]=main_block.array[x+y*max_block_width];
+    }
+    x+=1;
+   }
+   y+=1;
+  }
+  
+  puyo_dropped+=2;
+
+  spawn_block();
+
+
+}
+
+
+
+
+
+
+
+
+
+
+int block_was_set=0;
+
+
+/*all things about moving down*/
+void puyo_move_down()
+{
+ /*make backup of block location*/
+
+ temp_block=main_block;
+
+
+ main_block.y+=1;
+
+ last_move_fail=tetris_check_move();
+ if(last_move_fail)
+ {
+  main_block=temp_block;
+  /*printf("Block is finished\n");*/
+
+  puyo_set_block();
+  block_was_set=1;
+
+  move_log[moves]=move_id;
+  moves++; /*moves normally wouldn't be incremented because move check fails but setting a block is actually a valid move.*/
+ }
+ else
+ {
+  /*move was successful*/
+  block_was_set=0;
+ }
+
+ last_move_fail=0; /*because moving down is always a valid operation, the fail variable should be set to 0*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*basic (non SRS) rotation system*/
@@ -509,88 +636,7 @@ void block_hold()
  moves=moves+1;
 }
 
-struct tetris_grid save_grid;
-int saved_moves; /*number of valid moves*/
-int saved_frame;  /*current animation frame*/
-int saved_back_to_back; /*back to back score bonus*/
 
-int move_log_position;
-
-
-int saved_block_array[16],saved_main_block_width,saved_block_color,saved_block_id,saved_main_block_x,saved_block_y; /*to store all details of main block*/
-
-int saved_hold_block_array[16],saved_hold_block_width,saved_hold_block_color,saved_hold_block_id,saved_hold_main_block_x,saved_hold_block_y; /*to store all details of main block*/
-int saved_hold_used;
-
-int saved_score;
-
-int saved_puyo_popped_all;
-int saved_puyo_dropped;
-int saved_puyo1,saved_puyo2;
-
-int save_exist=0;
-
-struct tetris_block save_main_block,save_hold_block;
-
-/*
- a special function which saves all the important data in the game. This allows reloading to a previous position when I make a mistake.
-*/
-void puyo_save_state()
-{
- save_grid=main_grid;
-
- save_main_block=main_block;
- save_hold_block=hold_block;
-
- saved_puyo_dropped=puyo_dropped;
- 
- saved_puyo1=puyo1;
- saved_puyo2=puyo2;
-
- saved_moves=moves;
- saved_frame=frame;
- saved_hold_used=hold_used;
- saved_score=score;
- saved_puyo_popped_all=puyo_popped_all;
- saved_back_to_back=back_to_back;
-
- printf("Game Saved at move %d\n",moves);
- save_exist=1;
-}
-
-
-/*
- a special function which loads the data previously saved. This allows reloading to a previous position when I make a mistake.
-*/
-void puyo_load_state()
-{
-
- if(save_exist==0)
- {
-  printf("No save exists yet.\n");
-  return;
- }
-
- main_grid=save_grid;
-
- main_block=save_main_block;
- hold_block=save_hold_block;
-
- puyo_dropped=saved_puyo_dropped;
- 
- puyo1=saved_puyo1;
- puyo2=saved_puyo2;
-
- moves=saved_moves;
- frame=saved_frame;
- hold_used=saved_hold_used;
- score=saved_score;
- puyo_popped_all=saved_puyo_popped_all;
- back_to_back=saved_back_to_back;
-
- printf("Game Loaded at move %d\n",moves);
-
-}
 
 
 

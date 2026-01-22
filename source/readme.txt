@@ -1,38 +1,29 @@
-This folder has the source code written in C using Raylib. None of the compilation has changed since copying the files from Chaste Tris.
+SDL Chaste Puyo
+Also known as Chaste Puyo: SDL_Renderer
 
-Since this is a clone of Chaste Tris, all controls are the same. Most notably rotation is done with Z and X.
-Arrow keys or WASD for movement.
+This project is a port of a previous game I made using Raylib. It is a clone of the popular Japanese puzzle game: Puyo Puyo. SDL allows me greater control over the game loop than I knew how to do in Raylib and so I decided to rewrite the project.
 
-Oddly enough, the hold feature from Tetris is also still available from Chaste Tris by pressing C. This violates Puyo Puyo rules but there is nothing to stop you from it.
+This version and the original were both initially created by copying and rewriting several functions in my previous game: Chaste Tris. The game is close enough that some functions did not need modification.
 
-Saving and loading with . and , is also still allowed. This means building up extreme chains is possible because mistakes can be fixed.
+To support my programming work, please buy my original Tetris game on either Steam or itch.io
 
-Updates:
+https://store.steampowered.com/app/1986120/Chaste_Tris/
+https://chastitywhiterose.itch.io/chaste-tris
 
-February 20 2023: Added music to Chaste Puyo and also multiple savestates.
+You can also become my patron and support my programming work financially. In return you'll get access to the latest things I am working on that may never be published if I don't get some feedback on them.
 
+https://www.patreon.com/ChastityWhiteRoseProgramming
 
-Chaste Puyo Music License
+In the future I hope to write a more detailed guide on the controls and how to play it. But really all you need to know to get started is:
 
-The only thing in Chaste Puyo that is not my creation is the music which was obtained freely from OverClocked ReMix.
+WASD or arrow keys move the block
+Z and X rotate it
+and C holds the block for later use. It can be swapped infinite times with the current block.
 
-According to my understanding of the terms in the FAQ I am allowed to use the songs as long as I give credit to OC Remix and the artists. As such, I intend to mention them in every video I create showing the gameplay with the newly added music. In fact, if I have not included credit anywhere it is most likely a technical limitation such as Tiktok or Instagram not allowing me to add long descriptions. But where possible I will give credit to the artists and OC ReMix.
+The game also has the ability to save and load at any point in time. Press I to save and P to load.
 
-OverClocked ReMix
+You can email me with any questions or give me a comment at the sites previously mentioned.
 
-ReMix:Donkey Kong Country 2: Diddy's Kong Quest "Coming Home" 4:10
-By MkVaff
-
-https://ocremix.org/remix/OCR04276
-
-ReMix:Puyo Puyo "I Just Skipped Time Yesterday" 3:44
-By Rexy
-
-https://ocremix.org/remix/OCR03941
-
-ReMix:Dr. Robotnik's Mean Bean Machine "Blobby Blob Disco" 3:46
-By Jivemaster
-
-https://ocremix.org/remix/OCR00341
+chastitywhiterose@gmail.com
 
 
